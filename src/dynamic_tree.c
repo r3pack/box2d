@@ -182,7 +182,7 @@ static void b2FreeNode( b2DynamicTree* tree, int nodeId )
 static int b2FindBestSibling( const b2DynamicTree* tree, b2AABB boxD )
 {
 	b2Vec2 centerD = b2AABB_Center( boxD );
-	float areaD = b2Perimeter( boxD );
+	b2Float areaD = b2Perimeter( boxD );
 
 	const b2TreeNode* nodes = tree->nodes;
 	int rootIndex = tree->root;
@@ -190,14 +190,14 @@ static int b2FindBestSibling( const b2DynamicTree* tree, b2AABB boxD )
 	b2AABB rootBox = nodes[rootIndex].aabb;
 
 	// Area of current node
-	float areaBase = b2Perimeter( rootBox );
+	b2Float areaBase = b2Perimeter( rootBox );
 
 	// Area of inflated node
-	float directCost = b2Perimeter( b2AABB_Union( rootBox, boxD ) );
-	float inheritedCost = 0.0f;
+	b2Float directCost = b2Perimeter( b2AABB_Union( rootBox, boxD ) );
+	b2Float inheritedCost = 0.0f;
 
 	int bestSibling = rootIndex;
-	float bestCost = directCost;
+	b2Float bestCost = directCost;
 
 	// Descend the tree from root, following a single greedy path.
 	int index = rootIndex;
@@ -207,7 +207,7 @@ static int b2FindBestSibling( const b2DynamicTree* tree, b2AABB boxD )
 		int child2 = nodes[index].child2;
 
 		// Cost of creating a new parent for this node and the new leaf
-		float cost = directCost + inheritedCost;
+		b2Float cost = directCost + inheritedCost;
 
 		// Sometimes there are multiple identical costs within tolerance.
 		// This breaks the ties using the centroid distance.
@@ -224,15 +224,15 @@ static int b2FindBestSibling( const b2DynamicTree* tree, b2AABB boxD )
 		bool leaf2 = nodes[child2].height == 0;
 
 		// Cost of descending into child 1
-		float lowerCost1 = FLT_MAX;
+		b2Float lowerCost1 = FLT_MAX;
 		b2AABB box1 = nodes[child1].aabb;
-		float directCost1 = b2Perimeter( b2AABB_Union( box1, boxD ) );
-		float area1 = 0.0f;
+		b2Float directCost1 = b2Perimeter( b2AABB_Union( box1, boxD ) );
+		b2Float area1 = 0.0f;
 		if ( leaf1 )
 		{
 			// Child 1 is a leaf
 			// Cost of creating new node and increasing area of node P
-			float cost1 = directCost1 + inheritedCost;
+			b2Float cost1 = directCost1 + inheritedCost;
 
 			// Need this here due to while condition above
 			if ( cost1 < bestCost )
@@ -251,15 +251,15 @@ static int b2FindBestSibling( const b2DynamicTree* tree, b2AABB boxD )
 		}
 
 		// Cost of descending into child 2
-		float lowerCost2 = FLT_MAX;
+		b2Float lowerCost2 = FLT_MAX;
 		b2AABB box2 = nodes[child2].aabb;
-		float directCost2 = b2Perimeter( b2AABB_Union( box2, boxD ) );
-		float area2 = 0.0f;
+		b2Float directCost2 = b2Perimeter( b2AABB_Union( box2, boxD ) );
+		b2Float area2 = 0.0f;
 		if ( leaf2 )
 		{
 			// Child 2 is a leaf
 			// Cost of creating new node and increasing area of node P
-			float cost2 = directCost2 + inheritedCost;
+			b2Float cost2 = directCost2 + inheritedCost;
 
 			// Need this here due to while condition above
 			if ( cost2 < bestCost )
@@ -366,15 +366,15 @@ static void b2RotateNodes( b2DynamicTree* tree, int iA )
 		B2_ASSERT( 0 <= iG && iG < tree->nodeCapacity );
 
 		// Base cost
-		float costBase = b2Perimeter( C->aabb );
+		b2Float costBase = b2Perimeter( C->aabb );
 
 		// Cost of swapping B and F
 		b2AABB aabbBG = b2AABB_Union( B->aabb, G->aabb );
-		float costBF = b2Perimeter( aabbBG );
+		b2Float costBF = b2Perimeter( aabbBG );
 
 		// Cost of swapping B and G
 		b2AABB aabbBF = b2AABB_Union( B->aabb, F->aabb );
-		float costBG = b2Perimeter( aabbBF );
+		b2Float costBG = b2Perimeter( aabbBF );
 
 		if ( costBase < costBF && costBase < costBG )
 		{
@@ -432,15 +432,15 @@ static void b2RotateNodes( b2DynamicTree* tree, int iA )
 		B2_ASSERT( 0 <= iE && iE < tree->nodeCapacity );
 
 		// Base cost
-		float costBase = b2Perimeter( B->aabb );
+		b2Float costBase = b2Perimeter( B->aabb );
 
 		// Cost of swapping C and D
 		b2AABB aabbCE = b2AABB_Union( C->aabb, E->aabb );
-		float costCD = b2Perimeter( aabbCE );
+		b2Float costCD = b2Perimeter( aabbCE );
 
 		// Cost of swapping C and E
 		b2AABB aabbCD = b2AABB_Union( C->aabb, D->aabb );
-		float costCE = b2Perimeter( aabbCD );
+		b2Float costCE = b2Perimeter( aabbCD );
 
 		if ( costBase < costCD && costBase < costCE )
 		{
@@ -502,15 +502,15 @@ static void b2RotateNodes( b2DynamicTree* tree, int iA )
 		B2_ASSERT( 0 <= iG && iG < tree->nodeCapacity );
 
 		// Base cost
-		float areaB = b2Perimeter( B->aabb );
-		float areaC = b2Perimeter( C->aabb );
-		float costBase = areaB + areaC;
+		b2Float areaB = b2Perimeter( B->aabb );
+		b2Float areaC = b2Perimeter( C->aabb );
+		b2Float costBase = areaB + areaC;
 		enum b2RotateType bestRotation = b2_rotateNone;
-		float bestCost = costBase;
+		b2Float bestCost = costBase;
 
 		// Cost of swapping B and F
 		b2AABB aabbBG = b2AABB_Union( B->aabb, G->aabb );
-		float costBF = areaB + b2Perimeter( aabbBG );
+		b2Float costBF = areaB + b2Perimeter( aabbBG );
 		if ( costBF < bestCost )
 		{
 			bestRotation = b2_rotateBF;
@@ -519,7 +519,7 @@ static void b2RotateNodes( b2DynamicTree* tree, int iA )
 
 		// Cost of swapping B and G
 		b2AABB aabbBF = b2AABB_Union( B->aabb, F->aabb );
-		float costBG = areaB + b2Perimeter( aabbBF );
+		b2Float costBG = areaB + b2Perimeter( aabbBF );
 		if ( costBG < bestCost )
 		{
 			bestRotation = b2_rotateBG;
@@ -528,7 +528,7 @@ static void b2RotateNodes( b2DynamicTree* tree, int iA )
 
 		// Cost of swapping C and D
 		b2AABB aabbCE = b2AABB_Union( C->aabb, E->aabb );
-		float costCD = areaC + b2Perimeter( aabbCE );
+		b2Float costCD = areaC + b2Perimeter( aabbCE );
 		if ( costCD < bestCost )
 		{
 			bestRotation = b2_rotateCD;
@@ -537,7 +537,7 @@ static void b2RotateNodes( b2DynamicTree* tree, int iA )
 
 		// Cost of swapping C and E
 		b2AABB aabbCD = b2AABB_Union( C->aabb, D->aabb );
-		float costCE = areaC + b2Perimeter( aabbCD );
+		b2Float costCE = areaC + b2Perimeter( aabbCD );
 		if ( costCE < bestCost )
 		{
 			bestRotation = b2_rotateCE;
@@ -873,7 +873,7 @@ int b2DynamicTree_GetHeight( const b2DynamicTree* tree )
 	return tree->nodes[tree->root].height;
 }
 
-float b2DynamicTree_GetAreaRatio( const b2DynamicTree* tree )
+b2Float b2DynamicTree_GetAreaRatio( const b2DynamicTree* tree )
 {
 	if ( tree->root == B2_NULL_INDEX )
 	{
@@ -881,9 +881,9 @@ float b2DynamicTree_GetAreaRatio( const b2DynamicTree* tree )
 	}
 
 	const b2TreeNode* root = tree->nodes + tree->root;
-	float rootArea = b2Perimeter( root->aabb );
+	b2Float rootArea = b2Perimeter( root->aabb );
 
-	float totalArea = 0.0f;
+	b2Float totalArea = 0.0f;
 	for ( int i = 0; i < tree->nodeCapacity; ++i )
 	{
 		const b2TreeNode* node = tree->nodes + i;
@@ -1145,7 +1145,7 @@ b2TreeStats b2DynamicTree_RayCast( const b2DynamicTree* tree, const b2RayCastInp
 	// Separating axis for segment (Gino, p80).
 	// |dot(v, p1 - c)| > dot(|v|, h)
 
-	float maxFraction = input->maxFraction;
+	b2Float maxFraction = input->maxFraction;
 
 	b2Vec2 p2 = b2MulAdd( p1, maxFraction, d );
 
@@ -1185,8 +1185,8 @@ b2TreeStats b2DynamicTree_RayCast( const b2DynamicTree* tree, const b2RayCastInp
 		// radius extension is added to the node in this case
 		b2Vec2 c = b2AABB_Center( nodeAABB );
 		b2Vec2 h = b2AABB_Extents( nodeAABB );
-		float term1 = b2AbsFloat( b2Dot( v, b2Sub( p1, c ) ) );
-		float term2 = b2Dot( abs_v, h );
+		b2Float term1 = b2AbsFloat( b2Dot( v, b2Sub( p1, c ) ) );
+		b2Float term2 = b2Dot( abs_v, h );
 		if ( term2 < term1 )
 		{
 			continue;
@@ -1196,7 +1196,7 @@ b2TreeStats b2DynamicTree_RayCast( const b2DynamicTree* tree, const b2RayCastInp
 		{
 			subInput.maxFraction = maxFraction;
 
-			float value = callback( &subInput, nodeId, node->userData, context );
+			b2Float value = callback( &subInput, nodeId, node->userData, context );
 			result.leafVisits += 1;
 
 			// The user may return -1 to indicate this shape should be skipped
@@ -1276,7 +1276,7 @@ b2TreeStats b2DynamicTree_ShapeCast( const b2DynamicTree* tree, const b2ShapeCas
 	// Separating axis for segment (Gino, p80).
 	// |dot(v, p1 - c)| > dot(|v|, h)
 
-	float maxFraction = input->maxFraction;
+	b2Float maxFraction = input->maxFraction;
 
 	// Build total box for the shape cast
 	b2Vec2 t = b2MulSV( maxFraction, input->translation );
@@ -1315,8 +1315,8 @@ b2TreeStats b2DynamicTree_ShapeCast( const b2DynamicTree* tree, const b2ShapeCas
 		// radius extension is added to the node in this case
 		b2Vec2 c = b2AABB_Center( node->aabb );
 		b2Vec2 h = b2Add( b2AABB_Extents( node->aabb ), extension );
-		float term1 = b2AbsFloat( b2Dot( v, b2Sub( p1, c ) ) );
-		float term2 = b2Dot( abs_v, h );
+		b2Float term1 = b2AbsFloat( b2Dot( v, b2Sub( p1, c ) ) );
+		b2Float term2 = b2Dot( abs_v, h );
 		if ( term2 < term1 )
 		{
 			continue;
@@ -1326,7 +1326,7 @@ b2TreeStats b2DynamicTree_ShapeCast( const b2DynamicTree* tree, const b2ShapeCas
 		{
 			subInput.maxFraction = maxFraction;
 
-			float value = callback( &subInput, nodeId, node->userData, context );
+			b2Float value = callback( &subInput, nodeId, node->userData, context );
 			stats.leafVisits += 1;
 
 			if ( value == 0.0f )
@@ -1403,7 +1403,7 @@ static int b2PartitionMid( int* indices, b2Vec2* centers, int count )
 	int i1 = 0, i2 = count;
 	if ( d.x > d.y )
 	{
-		float pivot = c.x;
+		b2Float pivot = c.x;
 
 		while ( i1 < i2 )
 		{
@@ -1440,7 +1440,7 @@ static int b2PartitionMid( int* indices, b2Vec2* centers, int count )
 	}
 	else
 	{
-		float pivot = c.y;
+		b2Float pivot = c.y;
 
 		while ( i1 < i2 )
 		{
@@ -1528,7 +1528,7 @@ static int b2PartitionSAH( int* indices, int* binIndices, b2AABB* boxes, int cou
 
 	// Find longest axis
 	int axisIndex;
-	float invD;
+	b2Float invD;
 	if ( d.x > d.y )
 	{
 		axisIndex = 0;
@@ -1552,13 +1552,13 @@ static int b2PartitionSAH( int* indices, int* binIndices, b2AABB* boxes, int cou
 
 	// Assign boxes to bins and compute bin boxes
 	// TODO_ERIN optimize
-	float binCount = B2_BIN_COUNT;
-	float lowerBoundArray[2] = { centroidAABB.lowerBound.x, centroidAABB.lowerBound.y };
-	float minC = lowerBoundArray[axisIndex];
+	b2Float binCount = B2_BIN_COUNT;
+	b2Float lowerBoundArray[2] = { centroidAABB.lowerBound.x, centroidAABB.lowerBound.y };
+	b2Float minC = lowerBoundArray[axisIndex];
 	for ( int i = 0; i < count; ++i )
 	{
 		b2Vec2 c = b2AABB_Center( boxes[i] );
-		float cArray[2] = { c.x, c.y };
+		b2Float cArray[2] = { c.x, c.y };
 		int binIndex = (int)( binCount * ( cArray[axisIndex] - minC ) * invD );
 		binIndex = b2ClampInt( binIndex, 0, B2_BIN_COUNT - 1 );
 		binIndices[i] = binIndex;
@@ -1587,16 +1587,16 @@ static int b2PartitionSAH( int* indices, int* binIndices, b2AABB* boxes, int cou
 	}
 
 	// Find best split to minimize SAH
-	float minCost = FLT_MAX;
+	b2Float minCost = FLT_MAX;
 	int bestPlane = 0;
 	for ( int i = 0; i < planeCount; ++i )
 	{
-		float leftArea = b2Perimeter( planes[i].leftAABB );
-		float rightArea = b2Perimeter( planes[i].rightAABB );
+		b2Float leftArea = b2Perimeter( planes[i].leftAABB );
+		b2Float rightArea = b2Perimeter( planes[i].rightAABB );
 		int leftCount = planes[i].leftCount;
 		int rightCount = planes[i].rightCount;
 
-		float cost = leftCount * leftArea + rightCount * rightArea;
+		b2Float cost = leftCount * leftArea + rightCount * rightArea;
 		if ( cost < minCost )
 		{
 			bestPlane = i;

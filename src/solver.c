@@ -66,11 +66,11 @@ static void b2IntegrateVelocitiesTask( int startIndex, int endIndex, b2StepConte
 	b2BodySim* sims = context->sims;
 
 	b2Vec2 gravity = context->world->gravity;
-	float h = context->h;
-	float maxLinearSpeed = context->maxLinearVelocity;
-	float maxAngularSpeed = B2_MAX_ROTATION * context->inv_dt;
-	float maxLinearSpeedSquared = maxLinearSpeed * maxLinearSpeed;
-	float maxAngularSpeedSquared = maxAngularSpeed * maxAngularSpeed;
+	b2Float h = context->h;
+	b2Float maxLinearSpeed = context->maxLinearVelocity;
+	b2Float maxAngularSpeed = B2_MAX_ROTATION * context->inv_dt;
+	b2Float maxLinearSpeedSquared = maxLinearSpeed * maxLinearSpeed;
+	b2Float maxAngularSpeedSquared = maxAngularSpeed * maxAngularSpeed;
 
 	for ( int i = startIndex; i < endIndex; ++i )
 	{
@@ -78,7 +78,7 @@ static void b2IntegrateVelocitiesTask( int startIndex, int endIndex, b2StepConte
 		b2BodyState* state = states + i;
 
 		b2Vec2 v = state->linearVelocity;
-		float w = state->angularVelocity;
+		b2Float w = state->angularVelocity;
 
 		// Apply forces, torque, gravity, and damping
 		// Apply damping.
@@ -88,15 +88,15 @@ static void b2IntegrateVelocitiesTask( int startIndex, int endIndex, b2StepConte
 		// v2 = exp(-c * dt) * v1
 		// Pade approximation:
 		// v2 = v1 * 1 / (1 + c * dt)
-		float linearDamping = 1.0f / ( 1.0f + h * sim->linearDamping );
-		float angularDamping = 1.0f / ( 1.0f + h * sim->angularDamping );
+		b2Float linearDamping = 1.0f / ( 1.0f + h * sim->linearDamping );
+		b2Float angularDamping = 1.0f / ( 1.0f + h * sim->angularDamping );
 
 		// Gravity scale will be zero for kinematic bodies
-		float gravityScale = sim->invMass > 0.0f ? sim->gravityScale : 0.0f;
+		b2Float gravityScale = sim->invMass > 0.0f ? sim->gravityScale : 0.0f;
 
 		// lvd = h * im * f + h * g
 		b2Vec2 linearVelocityDelta = b2Add( b2MulSV( h * sim->invMass, sim->force ), b2MulSV( h * gravityScale, gravity ) );
-		float angularVelocityDelta = h * sim->invInertia * sim->torque;
+		b2Float angularVelocityDelta = h * sim->invInertia * sim->torque;
 
 		v = b2MulAdd( linearVelocityDelta, linearDamping, v );
 		w = angularVelocityDelta + angularDamping * w;
@@ -104,7 +104,7 @@ static void b2IntegrateVelocitiesTask( int startIndex, int endIndex, b2StepConte
 		// Clamp to max linear speed
 		if ( b2Dot( v, v ) > maxLinearSpeedSquared )
 		{
-			float ratio = maxLinearSpeed / b2Length( v );
+			b2Float ratio = maxLinearSpeed / b2Length( v );
 			v = b2MulSV( ratio, v );
 			sim->isSpeedCapped = true;
 		}
@@ -112,7 +112,7 @@ static void b2IntegrateVelocitiesTask( int startIndex, int endIndex, b2StepConte
 		// Clamp to max angular speed
 		if ( w * w > maxAngularSpeedSquared && sim->allowFastRotation == false )
 		{
-			float ratio = maxAngularSpeed / b2AbsFloat( w );
+			b2Float ratio = maxAngularSpeed / b2AbsFloat( w );
 			w *= ratio;
 			sim->isSpeedCapped = true;
 		}
@@ -180,7 +180,7 @@ static void b2IntegratePositionsTask( int startIndex, int endIndex, b2StepContex
 	b2TracyCZoneNC( integrate_positions, "IntPos", b2_colorDarkSeaGreen, true );
 
 	b2BodyState* states = context->states;
-	float h = context->h;
+	b2Float h = context->h;
 
 	B2_ASSERT( startIndex <= endIndex );
 
@@ -201,7 +201,7 @@ struct b2ContinuousContext
 	b2Shape* fastShape;
 	b2Vec2 centroid1, centroid2;
 	b2Sweep sweep;
-	float fraction;
+	b2Float fraction;
 };
 
 // This is called from b2DynamicTree_Query for continuous collision
@@ -281,16 +281,16 @@ static bool b2ContinuousQueryCallback( int proxyId, int shapeId, void* context )
 		b2Vec2 p1 = b2TransformPoint( transform, shape->chainSegment.segment.point1 );
 		b2Vec2 p2 = b2TransformPoint( transform, shape->chainSegment.segment.point2 );
 		b2Vec2 e = b2Sub( p2, p1 );
-		float length;
+		b2Float length;
 		e = b2GetLengthAndNormalize( &length, e );
 		if (length > B2_LINEAR_SLOP)
 		{
 			b2Vec2 c1 = continuousContext->centroid1;
-			float offset1 = b2Cross( b2Sub( c1, p1 ), e );
+			b2Float offset1 = b2Cross( b2Sub( c1, p1 ), e );
 			b2Vec2 c2 = continuousContext->centroid2;
-			float offset2 = b2Cross( b2Sub( c2, p1 ), e );
+			b2Float offset2 = b2Cross( b2Sub( c2, p1 ), e );
 
-			const float allowedFraction = 0.25f;
+			const b2Float allowedFraction = 0.25f;
 			if ( offset1 < 0.0f || offset1 - offset2 < allowedFraction * fastBodySim->minExtent )
 			{
 				// Minimal clipping
@@ -309,8 +309,8 @@ static bool b2ContinuousQueryCallback( int proxyId, int shapeId, void* context )
 		b2Vec2 e = b2Sub( p2, p1 );
 		b2Vec2 c1 = continuousContext->centroid1;
 		b2Vec2 c2 = continuousContext->centroid2;
-		float offset1 = b2Cross( b2Sub( c1, p1 ), e );
-		float offset2 = b2Cross( b2Sub( c2, p1 ), e );
+		b2Float offset1 = b2Cross( b2Sub( c1, p1 ), e );
+		b2Float offset2 = b2Cross( b2Sub( c2, p1 ), e );
 
 		if ( offset1 > 0.0f && offset2 > 0.0f )
 		{
@@ -333,7 +333,7 @@ static bool b2ContinuousQueryCallback( int proxyId, int shapeId, void* context )
 	input.sweepB = continuousContext->sweep;
 	input.maxFraction = continuousContext->fraction;
 
-	float hitFraction = continuousContext->fraction;
+	b2Float hitFraction = continuousContext->fraction;
 
 	bool didHit = false;
 	b2TOIOutput output = b2TimeOfImpact( &input );
@@ -441,8 +441,8 @@ static void b2SolveContinuous( b2World* world, int bodySimIndex )
 		}
 	}
 
-	const float speculativeDistance = B2_SPECULATIVE_DISTANCE;
-	const float aabbMargin = B2_AABB_MARGIN;
+	const b2Float speculativeDistance = B2_SPECULATIVE_DISTANCE;
+	const b2Float aabbMargin = B2_AABB_MARGIN;
 
 	if ( context.fraction < 1.0f )
 	{
@@ -537,8 +537,8 @@ static void b2FinalizeBodiesTask( int startIndex, int endIndex, uint32_t threadI
 	b2BodyState* states = stepContext->states;
 	b2BodySim* sims = stepContext->sims;
 	b2Body* bodies = world->bodies.data;
-	float timeStep = stepContext->dt;
-	float invTimeStep = stepContext->inv_dt;
+	b2Float timeStep = stepContext->dt;
+	b2Float invTimeStep = stepContext->inv_dt;
 
 	uint16_t worldId = world->worldId;
 
@@ -552,8 +552,8 @@ static void b2FinalizeBodiesTask( int startIndex, int endIndex, uint32_t threadI
 
 	bool enableContinuous = world->enableContinuous;
 
-	const float speculativeDistance = B2_SPECULATIVE_DISTANCE;
-	const float aabbMargin = B2_AABB_MARGIN;
+	const b2Float speculativeDistance = B2_SPECULATIVE_DISTANCE;
+	const b2Float aabbMargin = B2_AABB_MARGIN;
 
 	B2_ASSERT( startIndex <= endIndex );
 
@@ -563,7 +563,7 @@ static void b2FinalizeBodiesTask( int startIndex, int endIndex, uint32_t threadI
 		b2BodySim* sim = sims + simIndex;
 
 		b2Vec2 v = state->linearVelocity;
-		float w = state->angularVelocity;
+		b2Float w = state->angularVelocity;
 
 		B2_ASSERT( b2IsValidVec2( v ) );
 		B2_ASSERT( b2IsValidFloat( w ) );
@@ -572,15 +572,15 @@ static void b2FinalizeBodiesTask( int startIndex, int endIndex, uint32_t threadI
 		sim->transform.q = b2NormalizeRot( b2MulRot( state->deltaRotation, sim->transform.q ) );
 
 		// Use the velocity of the farthest point on the body to account for rotation.
-		float maxVelocity = b2Length( v ) + b2AbsFloat( w ) * sim->maxExtent;
+		b2Float maxVelocity = b2Length( v ) + b2AbsFloat( w ) * sim->maxExtent;
 
 		// Sleep needs to observe position correction as well as true velocity.
-		float maxDeltaPosition = b2Length( state->deltaPosition ) + b2AbsFloat( state->deltaRotation.s ) * sim->maxExtent;
+		b2Float maxDeltaPosition = b2Length( state->deltaPosition ) + b2AbsFloat( state->deltaRotation.s ) * sim->maxExtent;
 
 		// Position correction is not as important for sleep as true velocity.
-		float positionSleepFactor = 0.5f;
+		b2Float positionSleepFactor = 0.5f;
 
-		float sleepVelocity = b2MaxFloat( maxVelocity, positionSleepFactor * invTimeStep * maxDeltaPosition );
+		b2Float sleepVelocity = b2MaxFloat( maxVelocity, positionSleepFactor * invTimeStep * maxDeltaPosition );
 
 		// reset state deltas
 		state->deltaPosition = b2Vec2_zero;
@@ -1741,7 +1741,7 @@ void b2Solve( b2World* world, b2StepContext* stepContext )
 
 		B2_ASSERT( world->contactHitEvents.count == 0 );
 
-		float threshold = world->hitEventThreshold;
+		b2Float threshold = world->hitEventThreshold;
 		b2GraphColor* colors = world->constraintGraph.colors;
 		for ( int i = 0; i < B2_GRAPH_COLOR_COUNT; ++i )
 		{
@@ -1764,7 +1764,7 @@ void b2Solve( b2World* world, b2StepContext* stepContext )
 				for ( int k = 0; k < pointCount; ++k )
 				{
 					b2ManifoldPoint* mp = contactSim->manifold.points + k;
-					float approachSpeed = -mp->normalVelocity;
+					b2Float approachSpeed = -mp->normalVelocity;
 
 					// Need to check max impulse because the point may be speculative and not colliding
 					if ( approachSpeed > event.approachSpeed && mp->maxNormalImpulse > 0.0f )
@@ -1979,7 +1979,7 @@ void b2Solve( b2World* world, b2StepContext* stepContext )
 
 		// Collect split island candidate for the next time step. No need to split if sleeping is disabled.
 		B2_ASSERT( world->splitIslandId == B2_NULL_INDEX );
-		float splitSleepTimer = 0.0f;
+		b2Float splitSleepTimer = 0.0f;
 		for ( int i = 0; i < world->workerCount; ++i )
 		{
 			b2TaskContext* taskContext = world->taskContexts.data + i;

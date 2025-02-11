@@ -91,23 +91,23 @@ static void b2EmptyDrawPolygon( const b2Vec2* vertices, int vertexCount, b2HexCo
 	B2_UNUSED( vertices, vertexCount, color, context );
 }
 
-static void b2EmptyDrawSolidPolygon( b2Transform transform, const b2Vec2* vertices, int vertexCount, float radius,
+static void b2EmptyDrawSolidPolygon( b2Transform transform, const b2Vec2* vertices, int vertexCount, b2Float radius,
 									 b2HexColor color, void* context )
 {
 	B2_UNUSED( transform, vertices, vertexCount, radius, color, context );
 }
 
-static void b2EmptyDrawCircle( b2Vec2 center, float radius, b2HexColor color, void* context )
+static void b2EmptyDrawCircle( b2Vec2 center, b2Float radius, b2HexColor color, void* context )
 {
 	B2_UNUSED( center, radius, color, context );
 }
 
-static void b2EmptyDrawSolidCircle( b2Transform transform, float radius, b2HexColor color, void* context )
+static void b2EmptyDrawSolidCircle( b2Transform transform, b2Float radius, b2HexColor color, void* context )
 {
 	B2_UNUSED( transform, radius, color, context );
 }
 
-static void b2EmptyDrawSolidCapsule( b2Vec2 p1, b2Vec2 p2, float radius, b2HexColor color, void* context )
+static void b2EmptyDrawSolidCapsule( b2Vec2 p1, b2Vec2 p2, b2Float radius, b2HexColor color, void* context )
 {
 	B2_UNUSED( p1, p2, radius, color, context );
 }
@@ -122,7 +122,7 @@ static void b2EmptyDrawTransform( b2Transform transform, void* context )
 	B2_UNUSED( transform, context );
 }
 
-static void b2EmptyDrawPoint( b2Vec2 p, float size, b2HexColor color, void* context )
+static void b2EmptyDrawPoint( b2Vec2 p, b2Float size, b2HexColor color, void* context )
 {
 	B2_UNUSED( p, size, color, context );
 }

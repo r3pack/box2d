@@ -36,8 +36,8 @@ static b2ChainShape* b2GetChainShape( b2World* world, b2ChainId chainId )
 static void b2UpdateShapeAABBs( b2Shape* shape, b2Transform transform, b2BodyType proxyType )
 {
 	// Compute a bounding box with a speculative margin
-	const float speculativeDistance = B2_SPECULATIVE_DISTANCE;
-	const float aabbMargin = B2_AABB_MARGIN;
+	const b2Float speculativeDistance = B2_SPECULATIVE_DISTANCE;
+	const b2Float aabbMargin = B2_AABB_MARGIN;
 
 	b2AABB aabb = b2ComputeShapeAABB( shape, transform );
 	aabb.lowerBound.x -= speculativeDistance;
@@ -47,7 +47,7 @@ static void b2UpdateShapeAABBs( b2Shape* shape, b2Transform transform, b2BodyTyp
 	shape->aabb = aabb;
 
 	// Smaller margin for static bodies. Cannot be zero due to TOI tolerance.
-	float margin = proxyType == b2_staticBody ? speculativeDistance : aabbMargin;
+	b2Float margin = proxyType == b2_staticBody ? speculativeDistance : aabbMargin;
 	b2AABB fatAABB;
 	fatAABB.lowerBound.x = aabb.lowerBound.x - margin;
 	fatAABB.lowerBound.y = aabb.lowerBound.y - margin;
@@ -199,7 +199,7 @@ b2ShapeId b2CreateCircleShape( b2BodyId bodyId, const b2ShapeDef* def, const b2C
 
 b2ShapeId b2CreateCapsuleShape( b2BodyId bodyId, const b2ShapeDef* def, const b2Capsule* capsule )
 {
-	float lengthSqr = b2DistanceSquared( capsule->center1, capsule->center2 );
+	b2Float lengthSqr = b2DistanceSquared( capsule->center1, capsule->center2 );
 	if ( lengthSqr <= B2_LINEAR_SLOP * B2_LINEAR_SLOP )
 	{
 		b2Circle circle = { b2Lerp( capsule->center1, capsule->center2, 0.5f ), capsule->radius };
@@ -217,7 +217,7 @@ b2ShapeId b2CreatePolygonShape( b2BodyId bodyId, const b2ShapeDef* def, const b2
 
 b2ShapeId b2CreateSegmentShape( b2BodyId bodyId, const b2ShapeDef* def, const b2Segment* segment )
 {
-	float lengthSqr = b2DistanceSquared( segment->point1, segment->point2 );
+	b2Float lengthSqr = b2DistanceSquared( segment->point1, segment->point2 );
 	if ( lengthSqr <= B2_LINEAR_SLOP * B2_LINEAR_SLOP )
 	{
 		B2_ASSERT( false );
@@ -643,7 +643,7 @@ b2Vec2 b2GetShapeCentroid( const b2Shape* shape )
 }
 
 // todo_erin maybe compute this on shape creation
-float b2GetShapePerimeter( const b2Shape* shape )
+b2Float b2GetShapePerimeter( const b2Shape* shape )
 {
 	switch ( shape->type )
 	{
@@ -656,7 +656,7 @@ float b2GetShapePerimeter( const b2Shape* shape )
 		{
 			const b2Vec2* points = shape->polygon.vertices;
 			int count = shape->polygon.count;
-			float perimeter = 2.0f * B2_PI * shape->polygon.radius;
+			b2Float perimeter = 2.0f * B2_PI * shape->polygon.radius;
 			B2_ASSERT( count > 0 );
 			b2Vec2 prev = points[count - 1];
 			for ( int i = 0; i < count; ++i )
@@ -678,14 +678,14 @@ float b2GetShapePerimeter( const b2Shape* shape )
 }
 
 // This projects the shape perimeter onto an infinite line
-float b2GetShapeProjectedPerimeter( const b2Shape* shape, b2Vec2 line )
+b2Float b2GetShapeProjectedPerimeter( const b2Shape* shape, b2Vec2 line )
 {
 	switch ( shape->type )
 	{
 		case b2_capsuleShape:
 		{
 			b2Vec2 axis = b2Sub( shape->capsule.center2, shape->capsule.center1 );
-			float projectedLength = b2AbsFloat( b2Dot( axis, line ) );
+			b2Float projectedLength = b2AbsFloat( b2Dot( axis, line ) );
 			return projectedLength + 2.0f * shape->capsule.radius;
 		}
 
@@ -697,9 +697,9 @@ float b2GetShapeProjectedPerimeter( const b2Shape* shape, b2Vec2 line )
 			const b2Vec2* points = shape->polygon.vertices;
 			int count = shape->polygon.count;
 			B2_ASSERT( count > 0 );
-			float value = b2Dot( points[0], line );
-			float lower = value;
-			float upper = value;
+			b2Float value = b2Dot( points[0], line );
+			b2Float lower = value;
+			b2Float upper = value;
 			for ( int i = 1; i < count; ++i )
 			{
 				value = b2Dot( points[i], line );
@@ -712,15 +712,15 @@ float b2GetShapeProjectedPerimeter( const b2Shape* shape, b2Vec2 line )
 
 		case b2_segmentShape:
 		{
-			float value1 = b2Dot( shape->segment.point1, line );
-			float value2 = b2Dot( shape->segment.point2, line );
+			b2Float value1 = b2Dot( shape->segment.point1, line );
+			b2Float value2 = b2Dot( shape->segment.point2, line );
 			return b2AbsFloat( value2 - value1 );
 		}
 
 		case b2_chainSegmentShape:
 		{
-			float value1 = b2Dot( shape->chainSegment.segment.point1, line );
-			float value2 = b2Dot( shape->chainSegment.segment.point2, line );
+			b2Float value1 = b2Dot( shape->chainSegment.segment.point1, line );
+			b2Float value2 = b2Dot( shape->chainSegment.segment.point2, line );
 			return b2AbsFloat( value2 - value1 );
 		}
 
@@ -752,7 +752,7 @@ b2ShapeExtent b2ComputeShapeExtent( const b2Shape* shape, b2Vec2 localCenter )
 	{
 		case b2_capsuleShape:
 		{
-			float radius = shape->capsule.radius;
+			b2Float radius = shape->capsule.radius;
 			extent.minExtent = radius;
 			b2Vec2 c1 = b2Sub( shape->capsule.center1, localCenter );
 			b2Vec2 c2 = b2Sub( shape->capsule.center2, localCenter );
@@ -762,7 +762,7 @@ b2ShapeExtent b2ComputeShapeExtent( const b2Shape* shape, b2Vec2 localCenter )
 
 		case b2_circleShape:
 		{
-			float radius = shape->circle.radius;
+			b2Float radius = shape->circle.radius;
 			extent.minExtent = radius;
 			extent.maxExtent = b2Length( b2Sub( shape->circle.center, localCenter ) ) + radius;
 		}
@@ -771,16 +771,16 @@ b2ShapeExtent b2ComputeShapeExtent( const b2Shape* shape, b2Vec2 localCenter )
 		case b2_polygonShape:
 		{
 			const b2Polygon* poly = &shape->polygon;
-			float minExtent = B2_HUGE;
-			float maxExtentSqr = 0.0f;
+			b2Float minExtent = B2_HUGE;
+			b2Float maxExtentSqr = 0.0f;
 			int count = poly->count;
 			for ( int i = 0; i < count; ++i )
 			{
 				b2Vec2 v = poly->vertices[i];
-				float planeOffset = b2Dot( poly->normals[i], b2Sub( v, poly->centroid ) );
+				b2Float planeOffset = b2Dot( poly->normals[i], b2Sub( v, poly->centroid ) );
 				minExtent = b2MinFloat( minExtent, planeOffset );
 
-				float distanceSqr = b2LengthSquared( b2Sub( v, localCenter ) );
+				b2Float distanceSqr = b2LengthSquared( b2Sub( v, localCenter ) );
 				maxExtentSqr = b2MaxFloat( maxExtentSqr, distanceSqr );
 			}
 
@@ -1039,7 +1039,7 @@ b2CastOutput b2Shape_RayCast( b2ShapeId shapeId, const b2RayCastInput* input )
 	return output;
 }
 
-void b2Shape_SetDensity( b2ShapeId shapeId, float density, bool updateBodyMass )
+void b2Shape_SetDensity( b2ShapeId shapeId, b2Float density, bool updateBodyMass )
 {
 	B2_ASSERT( b2IsValidFloat( density ) && density >= 0.0f );
 
@@ -1065,14 +1065,14 @@ void b2Shape_SetDensity( b2ShapeId shapeId, float density, bool updateBodyMass )
 	}
 }
 
-float b2Shape_GetDensity( b2ShapeId shapeId )
+b2Float b2Shape_GetDensity( b2ShapeId shapeId )
 {
 	b2World* world = b2GetWorld( shapeId.world0 );
 	b2Shape* shape = b2GetShape( world, shapeId );
 	return shape->density;
 }
 
-void b2Shape_SetFriction( b2ShapeId shapeId, float friction )
+void b2Shape_SetFriction( b2ShapeId shapeId, b2Float friction )
 {
 	B2_ASSERT( b2IsValidFloat( friction ) && friction >= 0.0f );
 
@@ -1087,14 +1087,14 @@ void b2Shape_SetFriction( b2ShapeId shapeId, float friction )
 	shape->friction = friction;
 }
 
-float b2Shape_GetFriction( b2ShapeId shapeId )
+b2Float b2Shape_GetFriction( b2ShapeId shapeId )
 {
 	b2World* world = b2GetWorld( shapeId.world0 );
 	b2Shape* shape = b2GetShape( world, shapeId );
 	return shape->friction;
 }
 
-void b2Shape_SetRestitution( b2ShapeId shapeId, float restitution )
+void b2Shape_SetRestitution( b2ShapeId shapeId, b2Float restitution )
 {
 	B2_ASSERT( b2IsValidFloat( restitution ) && restitution >= 0.0f );
 
@@ -1109,7 +1109,7 @@ void b2Shape_SetRestitution( b2ShapeId shapeId, float restitution )
 	shape->restitution = restitution;
 }
 
-float b2Shape_GetRestitution( b2ShapeId shapeId )
+b2Float b2Shape_GetRestitution( b2ShapeId shapeId )
 {
 	b2World* world = b2GetWorld( shapeId.world0 );
 	b2Shape* shape = b2GetShape( world, shapeId );
@@ -1415,7 +1415,7 @@ b2ChainId b2Shape_GetParentChain( b2ShapeId shapeId )
 	return ( b2ChainId ){ 0 };
 }
 
-void b2Chain_SetFriction( b2ChainId chainId, float friction )
+void b2Chain_SetFriction( b2ChainId chainId, b2Float friction )
 {
 	B2_ASSERT( b2IsValidFloat( friction ) && friction >= 0.0f );
 
@@ -1443,14 +1443,14 @@ void b2Chain_SetFriction( b2ChainId chainId, float friction )
 	}
 }
 
-float b2Chain_GetFriction( b2ChainId chainId )
+b2Float b2Chain_GetFriction( b2ChainId chainId )
 {
 	b2World* world = b2GetWorld( chainId.world0 );
 	b2ChainShape* chainShape = b2GetChainShape( world, chainId );
 	return chainShape->materials[0].friction;
 }
 
-void b2Chain_SetRestitution( b2ChainId chainId, float restitution )
+void b2Chain_SetRestitution( b2ChainId chainId, b2Float restitution )
 {
 	B2_ASSERT( b2IsValidFloat( restitution ) );
 
@@ -1478,7 +1478,7 @@ void b2Chain_SetRestitution( b2ChainId chainId, float restitution )
 	}
 }
 
-float b2Chain_GetRestitution( b2ChainId chainId )
+b2Float b2Chain_GetRestitution( b2ChainId chainId )
 {
 	b2World* world = b2GetWorld( chainId.world0 );
 	b2ChainShape* chainShape = b2GetChainShape( world, chainId );

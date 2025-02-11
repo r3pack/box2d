@@ -3,7 +3,9 @@
 
 #pragma once
 
-extern float b2_lengthUnitsPerMeter;
+#include "box2d/base.h"
+
+extern b2Float b2_lengthUnitsPerMeter;
 
 // Used to detect bad values. Positions greater than about 16km will have precision
 // problems, so 100km as a limit should be fine in all cases.

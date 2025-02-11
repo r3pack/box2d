@@ -21,8 +21,8 @@ b2CastOutput b2AABB_RayCast( b2AABB a, b2Vec2 p1, b2Vec2 p2 )
 	// Radius not handled
 	b2CastOutput output = { 0 };
 
-	float tmin = -FLT_MAX;
-	float tmax = FLT_MAX;
+	b2Float tmin = -FLT_MAX;
+	b2Float tmax = FLT_MAX;
 
 	b2Vec2 p = p1;
 	b2Vec2 d = b2Sub( p2, p1 );
@@ -41,16 +41,16 @@ b2CastOutput b2AABB_RayCast( b2AABB a, b2Vec2 p1, b2Vec2 p2 )
 	}
 	else
 	{
-		float inv_d = 1.0f / d.x;
-		float t1 = ( a.lowerBound.x - p.x ) * inv_d;
-		float t2 = ( a.upperBound.x - p.x ) * inv_d;
+		b2Float inv_d = 1.0f / d.x;
+		b2Float t1 = ( a.lowerBound.x - p.x ) * inv_d;
+		b2Float t2 = ( a.upperBound.x - p.x ) * inv_d;
 
 		// Sign of the normal vector.
-		float s = -1.0f;
+		b2Float s = -1.0f;
 
 		if ( t1 > t2 )
 		{
-			float tmp = t1;
+			b2Float tmp = t1;
 			t1 = t2;
 			t2 = tmp;
 			s = 1.0f;
@@ -84,16 +84,16 @@ b2CastOutput b2AABB_RayCast( b2AABB a, b2Vec2 p1, b2Vec2 p2 )
 	}
 	else
 	{
-		float inv_d = 1.0f / d.y;
-		float t1 = ( a.lowerBound.y - p.y ) * inv_d;
-		float t2 = ( a.upperBound.y - p.y ) * inv_d;
+		b2Float inv_d = 1.0f / d.y;
+		b2Float t1 = ( a.lowerBound.y - p.y ) * inv_d;
+		b2Float t2 = ( a.upperBound.y - p.y ) * inv_d;
 
 		// Sign of the normal vector.
-		float s = -1.0f;
+		b2Float s = -1.0f;
 
 		if ( t1 > t2 )
 		{
-			float tmp = t1;
+			b2Float tmp = t1;
 			t1 = t2;
 			t2 = tmp;
 			s = 1.0f;

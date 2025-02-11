@@ -5,6 +5,27 @@
 
 #include <stdint.h>
 
+#ifndef BOX2D_FLOAT_PRECISION
+	#define BOX2D_FLOAT_PRECISION 32
+#endif
+
+#if ( BOX2D_FLOAT_PRECISION == 32 )
+	typedef float b2Float;
+	#define b2Sqrt(value) sqrtf(value);
+#elif ( BOX2D_FLOAT_PRECISION == 64 )
+	typedef double b2Float;
+	#define b2Sqrt(value) sqrt(value);
+#elif ( BOX2D_FLOAT_PRECISION == 80 )
+	typedef long double b2Float;
+	#define b2Sqrt(value) sqrtl(value);
+#elif ( BOX2D_FLOAT_PRECISION == 128 )
+	typedef __float128 b2Float;
+	#include <quadmath.h> // There is no quadmath.h in the LLVM C Library yet
+	#define b2Sqrt(value) sqrtq(value);
+#else
+	#error "BOX2D_FLOAT_PRECISION must have value 32, 64, 80 or 128."
+#endif
+
 // clang-format off
 // 
 // Shared library macros
@@ -115,10 +136,10 @@ B2_API b2Version b2GetVersion( void );
 B2_API uint64_t b2GetTicks( void );
 
 /// Get the milliseconds passed from an initial tick value.
-B2_API float b2GetMilliseconds( uint64_t ticks );
+B2_API b2Float b2GetMilliseconds( uint64_t ticks );
 
 /// Get the milliseconds passed from an initial tick value.
-B2_API float b2GetMillisecondsAndReset( uint64_t* ticks );
+B2_API b2Float b2GetMillisecondsAndReset( uint64_t* ticks );
 
 /// Yield to be used in a busy loop.
 B2_API void b2Yield( void );

@@ -10,13 +10,13 @@ typedef struct b2ContactSim b2ContactSim;
 typedef struct b2ContactConstraintPoint
 {
 	b2Vec2 anchorA, anchorB;
-	float baseSeparation;
-	float relativeVelocity;
-	float normalImpulse;
-	float tangentImpulse;
-	float maxNormalImpulse;
-	float normalMass;
-	float tangentMass;
+	b2Float baseSeparation;
+	b2Float relativeVelocity;
+	b2Float normalImpulse;
+	b2Float tangentImpulse;
+	b2Float maxNormalImpulse;
+	b2Float normalMass;
+	b2Float tangentMass;
 } b2ContactConstraintPoint;
 
 typedef struct b2ContactConstraint
@@ -25,14 +25,14 @@ typedef struct b2ContactConstraint
 	int indexB;
 	b2ContactConstraintPoint points[2];
 	b2Vec2 normal;
-	float invMassA, invMassB;
-	float invIA, invIB;
-	float friction;
-	float restitution;
-	float tangentSpeed;
-	float rollingResistance;
-	float rollingMass;
-	float rollingImpulse;
+	b2Float invMassA, invMassB;
+	b2Float invIA, invIB;
+	b2Float friction;
+	b2Float restitution;
+	b2Float tangentSpeed;
+	b2Float rollingResistance;
+	b2Float rollingMass;
+	b2Float rollingImpulse;
 	b2Softness softness;
 	int pointCount;
 } b2ContactConstraint;

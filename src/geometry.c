@@ -4,6 +4,7 @@
 #include "constants.h"
 #include "shape.h"
 
+#include "box2d/base.h"
 #include "box2d/collision.h"
 #include "box2d/math_functions.h"
 
@@ -22,20 +23,20 @@ bool b2IsValidRay( const b2RayCastInput* input )
 static b2Vec2 b2ComputePolygonCentroid( const b2Vec2* vertices, int count )
 {
 	b2Vec2 center = { 0.0f, 0.0f };
-	float area = 0.0f;
+	b2Float area = 0.0f;
 
 	// Get a reference point for forming triangles.
 	// Use the first vertex to reduce round-off errors.
 	b2Vec2 origin = vertices[0];
 
-	const float inv3 = 1.0f / 3.0f;
+	const b2Float inv3 = 1.0f / 3.0f;
 
 	for ( int i = 1; i < count - 1; ++i )
 	{
 		// Triangle edges
 		b2Vec2 e1 = b2Sub( vertices[i], origin );
 		b2Vec2 e2 = b2Sub( vertices[i + 1], origin );
-		float a = 0.5f * b2Cross( e1, e2 );
+		b2Float a = 0.5f * b2Cross( e1, e2 );
 
 		// Area weighted centroid
 		center = b2MulAdd( center, a * inv3, b2Add( e1, e2 ) );
@@ -43,7 +44,7 @@ static b2Vec2 b2ComputePolygonCentroid( const b2Vec2* vertices, int count )
 	}
 
 	B2_ASSERT( area > FLT_EPSILON );
-	float invArea = 1.0f / area;
+	b2Float invArea = 1.0f / area;
 	center.x *= invArea;
 	center.y *= invArea;
 
@@ -53,7 +54,7 @@ static b2Vec2 b2ComputePolygonCentroid( const b2Vec2* vertices, int count )
 	return center;
 }
 
-b2Polygon b2MakePolygon( const b2Hull* hull, float radius )
+b2Polygon b2MakePolygon( const b2Hull* hull, b2Float radius )
 {
 	B2_ASSERT( b2ValidateHull( hull ) );
 
@@ -93,7 +94,7 @@ b2Polygon b2MakeOffsetPolygon( const b2Hull* hull, b2Vec2 position, b2Rot rotati
 	return b2MakeOffsetRoundedPolygon( hull, position, rotation, 0.0f );
 }
 
-b2Polygon b2MakeOffsetRoundedPolygon( const b2Hull* hull, b2Vec2 position, b2Rot rotation, float radius )
+b2Polygon b2MakeOffsetRoundedPolygon( const b2Hull* hull, b2Vec2 position, b2Rot rotation, b2Float radius )
 {
 	B2_ASSERT( b2ValidateHull( hull ) );
 
@@ -130,12 +131,12 @@ b2Polygon b2MakeOffsetRoundedPolygon( const b2Hull* hull, b2Vec2 position, b2Rot
 	return shape;
 }
 
-b2Polygon b2MakeSquare( float halfWidth )
+b2Polygon b2MakeSquare( b2Float halfWidth )
 {
 	return b2MakeBox( halfWidth, halfWidth );
 }
 
-b2Polygon b2MakeBox( float halfWidth, float halfHeight )
+b2Polygon b2MakeBox( b2Float halfWidth, b2Float halfHeight )
 {
 	B2_ASSERT( b2IsValidFloat( halfWidth ) && halfWidth > 0.0f );
 	B2_ASSERT( b2IsValidFloat( halfHeight ) && halfHeight > 0.0f );
@@ -155,7 +156,7 @@ b2Polygon b2MakeBox( float halfWidth, float halfHeight )
 	return shape;
 }
 
-b2Polygon b2MakeRoundedBox( float halfWidth, float halfHeight, float radius )
+b2Polygon b2MakeRoundedBox( b2Float halfWidth, b2Float halfHeight, b2Float radius )
 {
 	B2_ASSERT( b2IsValidFloat( radius ) && radius >= 0.0f );
 	b2Polygon shape = b2MakeBox( halfWidth, halfHeight );
@@ -163,7 +164,7 @@ b2Polygon b2MakeRoundedBox( float halfWidth, float halfHeight, float radius )
 	return shape;
 }
 
-b2Polygon b2MakeOffsetBox( float halfWidth, float halfHeight, b2Vec2 center, b2Rot rotation )
+b2Polygon b2MakeOffsetBox( b2Float halfWidth, b2Float halfHeight, b2Vec2 center, b2Rot rotation )
 {
 	b2Transform xf = { center, rotation };
 
@@ -182,7 +183,7 @@ b2Polygon b2MakeOffsetBox( float halfWidth, float halfHeight, b2Vec2 center, b2R
 	return shape;
 }
 
-b2Polygon b2MakeOffsetRoundedBox( float halfWidth, float halfHeight, b2Vec2 center, b2Rot rotation, float radius )
+b2Polygon b2MakeOffsetRoundedBox( b2Float halfWidth, b2Float halfHeight, b2Vec2 center, b2Rot rotation, b2Float radius )
 {
 	B2_ASSERT( b2IsValidFloat( radius ) && radius >= 0.0f );
 	b2Transform xf = { center, rotation };
@@ -217,9 +218,9 @@ b2Polygon b2TransformPolygon( b2Transform transform, const b2Polygon* polygon )
 	return p;
 }
 
-b2MassData b2ComputeCircleMass( const b2Circle* shape, float density )
+b2MassData b2ComputeCircleMass( const b2Circle* shape, b2Float density )
 {
-	float rr = shape->radius * shape->radius;
+	b2Float rr = shape->radius * shape->radius;
 
 	b2MassData massData;
 	massData.mass = density * B2_PI * rr;
@@ -231,17 +232,17 @@ b2MassData b2ComputeCircleMass( const b2Circle* shape, float density )
 	return massData;
 }
 
-b2MassData b2ComputeCapsuleMass( const b2Capsule* shape, float density )
+b2MassData b2ComputeCapsuleMass( const b2Capsule* shape, b2Float density )
 {
-	float radius = shape->radius;
-	float rr = radius * radius;
+	b2Float radius = shape->radius;
+	b2Float rr = radius * radius;
 	b2Vec2 p1 = shape->center1;
 	b2Vec2 p2 = shape->center2;
-	float length = b2Length( b2Sub( p2, p1 ) );
-	float ll = length * length;
+	b2Float length = b2Length( b2Sub( p2, p1 ) );
+	b2Float ll = length * length;
 
-	float circleMass = density * ( B2_PI * radius * radius );
-	float boxMass = density * ( 2.0f * radius * length );
+	b2Float circleMass = density * ( B2_PI * radius * radius );
+	b2Float boxMass = density * ( 2.0f * radius * length );
 
 	b2MassData massData;
 	massData.mass = circleMass + boxMass;
@@ -258,13 +259,13 @@ b2MassData b2ComputeCapsuleMass( const b2Capsule* shape, float density )
 	// I verified this formula by computing the convex hull of a 128 vertex capsule
 
 	// half circle centroid
-	float lc = 4.0f * radius / ( 3.0f * B2_PI );
+	b2Float lc = 4.0f * radius / ( 3.0f * B2_PI );
 
 	// half length of rectangular portion of capsule
-	float h = 0.5f * length;
+	b2Float h = 0.5f * length;
 
-	float circleInertia = circleMass * ( 0.5f * rr + h * h + 2.0f * h * lc );
-	float boxInertia = boxMass * ( 4.0f * rr + ll ) / 12.0f;
+	b2Float circleInertia = circleMass * ( 0.5f * rr + h * h + 2.0f * h * lc );
+	b2Float boxInertia = boxMass * ( 4.0f * rr + ll ) / 12.0f;
 	massData.rotationalInertia = circleInertia + boxInertia;
 
 	// inertia about the local origin
@@ -273,7 +274,7 @@ b2MassData b2ComputeCapsuleMass( const b2Capsule* shape, float density )
 	return massData;
 }
 
-b2MassData b2ComputePolygonMass( const b2Polygon* shape, float density )
+b2MassData b2ComputePolygonMass( const b2Polygon* shape, b2Float density )
 {
 	// Polygon mass, centroid, and inertia.
 	// Let rho be the polygon density in mass per unit area.
@@ -320,12 +321,12 @@ b2MassData b2ComputePolygonMass( const b2Polygon* shape, float density )
 
 	b2Vec2 vertices[B2_MAX_POLYGON_VERTICES] = { 0 };
 	int count = shape->count;
-	float radius = shape->radius;
+	b2Float radius = shape->radius;
 
 	if ( radius > 0.0f )
 	{
 		// Approximate mass of rounded polygons by pushing out the vertices.
-		float sqrt2 = 1.412f;
+		b2Float sqrt2 = 1.412f;
 		for ( int i = 0; i < count; ++i )
 		{
 			int j = i == 0 ? count - 1 : i - 1;
@@ -345,14 +346,14 @@ b2MassData b2ComputePolygonMass( const b2Polygon* shape, float density )
 	}
 
 	b2Vec2 center = { 0.0f, 0.0f };
-	float area = 0.0f;
-	float rotationalInertia = 0.0f;
+	b2Float area = 0.0f;
+	b2Float rotationalInertia = 0.0f;
 
 	// Get a reference point for forming triangles.
 	// Use the first vertex to reduce round-off errors.
 	b2Vec2 r = vertices[0];
 
-	const float inv3 = 1.0f / 3.0f;
+	const b2Float inv3 = 1.0f / 3.0f;
 
 	for ( int i = 1; i < count - 1; ++i )
 	{
@@ -360,19 +361,19 @@ b2MassData b2ComputePolygonMass( const b2Polygon* shape, float density )
 		b2Vec2 e1 = b2Sub( vertices[i], r );
 		b2Vec2 e2 = b2Sub( vertices[i + 1], r );
 
-		float D = b2Cross( e1, e2 );
+		b2Float D = b2Cross( e1, e2 );
 
-		float triangleArea = 0.5f * D;
+		b2Float triangleArea = 0.5f * D;
 		area += triangleArea;
 
 		// Area weighted centroid, r at origin
 		center = b2MulAdd( center, triangleArea * inv3, b2Add( e1, e2 ) );
 
-		float ex1 = e1.x, ey1 = e1.y;
-		float ex2 = e2.x, ey2 = e2.y;
+		b2Float ex1 = e1.x, ey1 = e1.y;
+		b2Float ex2 = e2.x, ey2 = e2.y;
 
-		float intx2 = ex1 * ex1 + ex2 * ex1 + ex2 * ex2;
-		float inty2 = ey1 * ey1 + ey2 * ey1 + ey2 * ey2;
+		b2Float intx2 = ex1 * ex1 + ex2 * ex1 + ex2 * ex2;
+		b2Float inty2 = ey1 * ey1 + ey2 * ey1 + ey2 * ey2;
 
 		rotationalInertia += ( 0.25f * inv3 * D ) * ( intx2 + inty2 );
 	}
@@ -384,7 +385,7 @@ b2MassData b2ComputePolygonMass( const b2Polygon* shape, float density )
 
 	// Center of mass, shift back from origin at r
 	B2_ASSERT( area > FLT_EPSILON );
-	float invArea = 1.0f / area;
+	b2Float invArea = 1.0f / area;
 	center.x *= invArea;
 	center.y *= invArea;
 	massData.center = b2Add( r, center );
@@ -401,7 +402,7 @@ b2MassData b2ComputePolygonMass( const b2Polygon* shape, float density )
 b2AABB b2ComputeCircleAABB( const b2Circle* shape, b2Transform xf )
 {
 	b2Vec2 p = b2TransformPoint( xf, shape->center );
-	float r = shape->radius;
+	b2Float r = shape->radius;
 
 	b2AABB aabb = { { p.x - r, p.y - r }, { p.x + r, p.y + r } };
 	return aabb;
@@ -461,12 +462,12 @@ bool b2PointInCircle( b2Vec2 point, const b2Circle* shape )
 
 bool b2PointInCapsule( b2Vec2 point, const b2Capsule* shape )
 {
-	float rr = shape->radius * shape->radius;
+	b2Float rr = shape->radius * shape->radius;
 	b2Vec2 p1 = shape->center1;
 	b2Vec2 p2 = shape->center2;
 
 	b2Vec2 d = b2Sub( p2, p1 );
-	float dd = b2Dot( d, d );
+	b2Float dd = b2Dot( d, d );
 	if ( dd == 0.0f )
 	{
 		// Capsule is really a circle
@@ -478,7 +479,7 @@ bool b2PointInCapsule( b2Vec2 point, const b2Capsule* shape )
 	// dot(point - c, d) = 0
 	// dot(point - p1 - t * d, d) = 0
 	// t = dot(point - p1, d) / dot(d, d)
-	float t = b2Dot( b2Sub( point, p1 ), d ) / dd;
+	b2Float t = b2Dot( b2Sub( point, p1 ), d ) / dd;
 	t = b2ClampFloat( t, 0.0f, 1.0f );
 	b2Vec2 c = b2MulAdd( p1, t, d );
 
@@ -513,7 +514,7 @@ b2CastOutput b2RayCastCircle( const b2RayCastInput* input, const b2Circle* shape
 
 	// Shift ray so circle center is the origin
 	b2Vec2 s = b2Sub( input->origin, p );
-	float length;
+	b2Float length;
 	b2Vec2 d = b2GetLengthAndNormalize( &length, input->translation );
 	if ( length == 0.0f )
 	{
@@ -524,14 +525,14 @@ b2CastOutput b2RayCastCircle( const b2RayCastInput* input, const b2Circle* shape
 	// Find closest point on ray to origin
 
 	// solve: dot(s + t * d, d) = 0
-	float t = -b2Dot( s, d );
+	b2Float t = -b2Dot( s, d );
 
 	// c is the closest point on the line to the origin
 	b2Vec2 c = b2MulAdd( s, t, d );
 
-	float cc = b2Dot( c, c );
-	float r = shape->radius;
-	float rr = r * r;
+	b2Float cc = b2Dot( c, c );
+	b2Float r = shape->radius;
+	b2Float rr = r * r;
 
 	if ( cc > rr )
 	{
@@ -540,9 +541,9 @@ b2CastOutput b2RayCastCircle( const b2RayCastInput* input, const b2Circle* shape
 	}
 
 	// Pythagoras
-	float h = sqrtf( rr - cc );
+	b2Float h = sqrtf( rr - cc );
 
-	float fraction = t - h;
+	b2Float fraction = t - h;
 
 	if ( fraction < 0.0f || input->maxFraction * length < fraction )
 	{
@@ -572,7 +573,7 @@ b2CastOutput b2RayCastCapsule( const b2RayCastInput* input, const b2Capsule* sha
 
 	b2Vec2 e = b2Sub( v2, v1 );
 
-	float capsuleLength;
+	b2Float capsuleLength;
 	b2Vec2 a = b2GetLengthAndNormalize( &capsuleLength, e );
 
 	if ( capsuleLength < FLT_EPSILON )
@@ -587,12 +588,12 @@ b2CastOutput b2RayCastCapsule( const b2RayCastInput* input, const b2Capsule* sha
 
 	// Ray from capsule start to ray start
 	b2Vec2 q = b2Sub( p1, v1 );
-	float qa = b2Dot( q, a );
+	b2Float qa = b2Dot( q, a );
 
 	// Vector to ray start that is perpendicular to capsule axis
 	b2Vec2 qp = b2MulAdd( q, -qa, a );
 
-	float radius = shape->radius;
+	b2Float radius = shape->radius;
 
 	// Does the ray start within the infinite length capsule?
 	if ( b2Dot( qp, qp ) < radius * radius )
@@ -618,7 +619,7 @@ b2CastOutput b2RayCastCapsule( const b2RayCastInput* input, const b2Capsule* sha
 	// Perpendicular to capsule axis, pointing right
 	b2Vec2 n = { a.y, -a.x };
 
-	float rayLength;
+	b2Float rayLength;
 	b2Vec2 u = b2GetLengthAndNormalize( &rayLength, d );
 
 	// Intersect ray with infinite length capsule
@@ -631,7 +632,7 @@ b2CastOutput b2RayCastCapsule( const b2RayCastInput* input, const b2Capsule* sha
 	// b = q + radius * ap
 
 	// Cramer's rule [a -u]
-	float den = -a.x * u.y + u.x * a.y;
+	b2Float den = -a.x * u.y + u.x * a.y;
 	if ( -FLT_EPSILON < den && den < FLT_EPSILON )
 	{
 		// Ray is parallel to capsule and outside infinite length capsule
@@ -641,15 +642,15 @@ b2CastOutput b2RayCastCapsule( const b2RayCastInput* input, const b2Capsule* sha
 	b2Vec2 b1 = b2MulSub( q, radius, n );
 	b2Vec2 b2 = b2MulAdd( q, radius, n );
 
-	float invDen = 1.0f / den;
+	b2Float invDen = 1.0f / den;
 
 	// Cramer's rule [a b1]
-	float s21 = ( a.x * b1.y - b1.x * a.y ) * invDen;
+	b2Float s21 = ( a.x * b1.y - b1.x * a.y ) * invDen;
 
 	// Cramer's rule [a b2]
-	float s22 = ( a.x * b2.y - b2.x * a.y ) * invDen;
+	b2Float s22 = ( a.x * b2.y - b2.x * a.y ) * invDen;
 
-	float s2;
+	b2Float s2;
 	b2Vec2 b;
 	if ( s21 < s22 )
 	{
@@ -669,7 +670,7 @@ b2CastOutput b2RayCastCapsule( const b2RayCastInput* input, const b2Capsule* sha
 	}
 
 	// Cramer's rule [b -u]
-	float s1 = ( -b.x * u.y + u.x * b.y ) * invDen;
+	b2Float s1 = ( -b.x * u.y + u.x * b.y ) * invDen;
 
 	if ( s1 < 0.0f )
 	{
@@ -700,7 +701,7 @@ b2CastOutput b2RayCastSegment( const b2RayCastInput* input, const b2Segment* sha
 	if ( oneSided )
 	{
 		// Skip left-side collision
-		float offset = b2Cross( b2Sub( input->origin, shape->point1 ), b2Sub( shape->point2, shape->point1 ) );
+		b2Float offset = b2Cross( b2Sub( input->origin, shape->point1 ), b2Sub( shape->point2, shape->point1 ) );
 		if ( offset < 0.0f )
 		{
 			b2CastOutput output = { 0 };
@@ -718,7 +719,7 @@ b2CastOutput b2RayCastSegment( const b2RayCastInput* input, const b2Segment* sha
 
 	b2CastOutput output = { 0 };
 
-	float length;
+	b2Float length;
 	b2Vec2 eUnit = b2GetLengthAndNormalize( &length, e );
 	if ( length == 0.0f )
 	{
@@ -733,8 +734,8 @@ b2CastOutput b2RayCastSegment( const b2RayCastInput* input, const b2Segment* sha
 	// p = p1 + t * d
 	// dot(normal, p - v1) = 0
 	// dot(normal, p1 - v1) + t * dot(normal, d) = 0
-	float numerator = b2Dot( normal, b2Sub( v1, p1 ) );
-	float denominator = b2Dot( normal, d );
+	b2Float numerator = b2Dot( normal, b2Sub( v1, p1 ) );
+	b2Float denominator = b2Dot( normal, d );
 
 	if ( denominator == 0.0f )
 	{
@@ -742,7 +743,7 @@ b2CastOutput b2RayCastSegment( const b2RayCastInput* input, const b2Segment* sha
 		return output;
 	}
 
-	float t = numerator / denominator;
+	b2Float t = numerator / denominator;
 	if ( t < 0.0f || input->maxFraction < t )
 	{
 		// out of ray range
@@ -756,7 +757,7 @@ b2CastOutput b2RayCastSegment( const b2RayCastInput* input, const b2Segment* sha
 	// p = v1 + s * e
 	// s = dot(p - v1, e) / dot(e, e)
 
-	float s = b2Dot( b2Sub( p, v1 ), eUnit );
+	b2Float s = b2Dot( b2Sub( p, v1 ), eUnit );
 	if ( s < 0.0f || length < s )
 	{
 		// out of segment range
@@ -786,7 +787,7 @@ b2CastOutput b2RayCastPolygon( const b2RayCastInput* input, const b2Polygon* sha
 		b2Vec2 p1 = input->origin;
 		b2Vec2 d = input->translation;
 
-		float lower = 0.0f, upper = input->maxFraction;
+		b2Float lower = 0.0f, upper = input->maxFraction;
 
 		int index = -1;
 
@@ -797,8 +798,8 @@ b2CastOutput b2RayCastPolygon( const b2RayCastInput* input, const b2Polygon* sha
 			// p = p1 + a * d
 			// dot(normal, p - v) = 0
 			// dot(normal, p1 - v) + a * dot(normal, d) = 0
-			float numerator = b2Dot( shape->normals[i], b2Sub( shape->vertices[i], p1 ) );
-			float denominator = b2Dot( shape->normals[i], d );
+			b2Float numerator = b2Dot( shape->normals[i], b2Sub( shape->vertices[i], p1 ) );
+			b2Float denominator = b2Dot( shape->normals[i], d );
 
 			if ( denominator == 0.0f )
 			{

@@ -143,7 +143,7 @@ typedef struct b2JointPair
 	b2JointSim* jointSim;
 } b2JointPair;
 
-static b2JointPair b2CreateJoint( b2World* world, b2Body* bodyA, b2Body* bodyB, void* userData, float drawSize, b2JointType type,
+static b2JointPair b2CreateJoint( b2World* world, b2Body* bodyA, b2Body* bodyB, void* userData, b2Float drawSize, b2JointType type,
 								  bool collideConnected )
 {
 	int bodyIdA = bodyA->id;
@@ -980,7 +980,7 @@ b2Vec2 b2Joint_GetConstraintForce( b2JointId jointId )
 	}
 }
 
-float b2Joint_GetConstraintTorque( b2JointId jointId )
+b2Float b2Joint_GetConstraintTorque( b2JointId jointId )
 {
 	b2World* world = b2GetWorld( jointId.world0 );
 	b2Joint* joint = b2GetJointFullId( world, jointId );

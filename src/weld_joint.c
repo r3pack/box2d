@@ -11,66 +11,66 @@
 // needed for dll export
 #include "box2d/box2d.h"
 
-float b2WeldJoint_GetReferenceAngle( b2JointId jointId )
+b2Float b2WeldJoint_GetReferenceAngle( b2JointId jointId )
 {
 	b2JointSim* joint = b2GetJointSimCheckType( jointId, b2_weldJoint );
 	return joint->weldJoint.referenceAngle;
 }
 
-void b2WeldJoint_SetReferenceAngle( b2JointId jointId, float angleInRadians )
+void b2WeldJoint_SetReferenceAngle( b2JointId jointId, b2Float angleInRadians )
 {
 	B2_ASSERT( b2IsValidFloat( angleInRadians ) );
 	b2JointSim* joint = b2GetJointSimCheckType( jointId, b2_weldJoint );
 	joint->weldJoint.referenceAngle = b2ClampFloat(angleInRadians, -B2_PI, B2_PI);
 }
 
-void b2WeldJoint_SetLinearHertz( b2JointId jointId, float hertz )
+void b2WeldJoint_SetLinearHertz( b2JointId jointId, b2Float hertz )
 {
 	B2_ASSERT( b2IsValidFloat( hertz ) && hertz >= 0.0f );
 	b2JointSim* joint = b2GetJointSimCheckType( jointId, b2_weldJoint );
 	joint->weldJoint.linearHertz = hertz;
 }
 
-float b2WeldJoint_GetLinearHertz( b2JointId jointId )
+b2Float b2WeldJoint_GetLinearHertz( b2JointId jointId )
 {
 	b2JointSim* joint = b2GetJointSimCheckType( jointId, b2_weldJoint );
 	return joint->weldJoint.linearHertz;
 }
 
-void b2WeldJoint_SetLinearDampingRatio( b2JointId jointId, float dampingRatio )
+void b2WeldJoint_SetLinearDampingRatio( b2JointId jointId, b2Float dampingRatio )
 {
 	B2_ASSERT( b2IsValidFloat( dampingRatio ) && dampingRatio >= 0.0f );
 	b2JointSim* joint = b2GetJointSimCheckType( jointId, b2_weldJoint );
 	joint->weldJoint.linearDampingRatio = dampingRatio;
 }
 
-float b2WeldJoint_GetLinearDampingRatio( b2JointId jointId )
+b2Float b2WeldJoint_GetLinearDampingRatio( b2JointId jointId )
 {
 	b2JointSim* joint = b2GetJointSimCheckType( jointId, b2_weldJoint );
 	return joint->weldJoint.linearDampingRatio;
 }
 
-void b2WeldJoint_SetAngularHertz( b2JointId jointId, float hertz )
+void b2WeldJoint_SetAngularHertz( b2JointId jointId, b2Float hertz )
 {
 	B2_ASSERT( b2IsValidFloat( hertz ) && hertz >= 0.0f );
 	b2JointSim* joint = b2GetJointSimCheckType( jointId, b2_weldJoint );
 	joint->weldJoint.angularHertz = hertz;
 }
 
-float b2WeldJoint_GetAngularHertz( b2JointId jointId )
+b2Float b2WeldJoint_GetAngularHertz( b2JointId jointId )
 {
 	b2JointSim* joint = b2GetJointSimCheckType( jointId, b2_weldJoint );
 	return joint->weldJoint.angularHertz;
 }
 
-void b2WeldJoint_SetAngularDampingRatio( b2JointId jointId, float dampingRatio )
+void b2WeldJoint_SetAngularDampingRatio( b2JointId jointId, b2Float dampingRatio )
 {
 	B2_ASSERT( b2IsValidFloat( dampingRatio ) && dampingRatio >= 0.0f );
 	b2JointSim* joint = b2GetJointSimCheckType( jointId, b2_weldJoint );
 	joint->weldJoint.angularDampingRatio = dampingRatio;
 }
 
-float b2WeldJoint_GetAngularDampingRatio( b2JointId jointId )
+b2Float b2WeldJoint_GetAngularDampingRatio( b2JointId jointId )
 {
 	b2JointSim* joint = b2GetJointSimCheckType( jointId, b2_weldJoint );
 	return joint->weldJoint.angularDampingRatio;
@@ -82,7 +82,7 @@ b2Vec2 b2GetWeldJointForce( b2World* world, b2JointSim* base )
 	return force;
 }
 
-float b2GetWeldJointTorque( b2World* world, b2JointSim* base )
+b2Float b2GetWeldJointTorque( b2World* world, b2JointSim* base )
 {
 	return world->inv_h * base->weldJoint.angularImpulse;
 }
@@ -124,10 +124,10 @@ void b2PrepareWeldJoint( b2JointSim* base, b2StepContext* context )
 	b2BodySim* bodySimA = b2BodySimArray_Get( &setA->bodySims, localIndexA );
 	b2BodySim* bodySimB = b2BodySimArray_Get( &setB->bodySims, localIndexB );
 
-	float mA = bodySimA->invMass;
-	float iA = bodySimA->invInertia;
-	float mB = bodySimB->invMass;
-	float iB = bodySimB->invInertia;
+	b2Float mA = bodySimA->invMass;
+	b2Float iA = bodySimA->invInertia;
+	b2Float mB = bodySimB->invMass;
+	b2Float iB = bodySimB->invInertia;
 
 	base->invMassA = mA;
 	base->invMassB = mB;
@@ -147,7 +147,7 @@ void b2PrepareWeldJoint( b2JointSim* base, b2StepContext* context )
 	joint->deltaAngle = b2RelativeAngle( qB, qA ) - joint->referenceAngle;
 	joint->deltaAngle = b2UnwindAngle( joint->deltaAngle );
 
-	float ka = iA + iB;
+	b2Float ka = iA + iB;
 	joint->axialMass = ka > 0.0f ? 1.0f / ka : 0.0f;
 
 	if ( joint->linearHertz == 0.0f )
@@ -177,10 +177,10 @@ void b2PrepareWeldJoint( b2JointSim* base, b2StepContext* context )
 
 void b2WarmStartWeldJoint( b2JointSim* base, b2StepContext* context )
 {
-	float mA = base->invMassA;
-	float mB = base->invMassB;
-	float iA = base->invIA;
-	float iB = base->invIB;
+	b2Float mA = base->invMassA;
+	b2Float mB = base->invMassB;
+	b2Float iA = base->invIA;
+	b2Float iB = base->invIB;
 
 	// dummy state for static bodies
 	b2BodyState dummyState = b2_identityBodyState;
@@ -204,10 +204,10 @@ void b2SolveWeldJoint( b2JointSim* base, b2StepContext* context, bool useBias )
 {
 	B2_ASSERT( base->type == b2_weldJoint );
 
-	float mA = base->invMassA;
-	float mB = base->invMassB;
-	float iA = base->invIA;
-	float iB = base->invIB;
+	b2Float mA = base->invMassA;
+	b2Float mB = base->invMassB;
+	b2Float iA = base->invIA;
+	b2Float iB = base->invIB;
 
 	// dummy state for static bodies
 	b2BodyState dummyState = b2_identityBodyState;
@@ -218,25 +218,25 @@ void b2SolveWeldJoint( b2JointSim* base, b2StepContext* context, bool useBias )
 	b2BodyState* stateB = joint->indexB == B2_NULL_INDEX ? &dummyState : context->states + joint->indexB;
 
 	b2Vec2 vA = stateA->linearVelocity;
-	float wA = stateA->angularVelocity;
+	b2Float wA = stateA->angularVelocity;
 	b2Vec2 vB = stateB->linearVelocity;
-	float wB = stateB->angularVelocity;
+	b2Float wB = stateB->angularVelocity;
 
 	// angular constraint
 	{
-		float bias = 0.0f;
-		float massScale = 1.0f;
-		float impulseScale = 0.0f;
+		b2Float bias = 0.0f;
+		b2Float massScale = 1.0f;
+		b2Float impulseScale = 0.0f;
 		if ( useBias || joint->angularHertz > 0.0f )
 		{
-			float C = b2RelativeAngle( stateB->deltaRotation, stateA->deltaRotation ) + joint->deltaAngle;
+			b2Float C = b2RelativeAngle( stateB->deltaRotation, stateA->deltaRotation ) + joint->deltaAngle;
 			bias = joint->angularSoftness.biasRate * C;
 			massScale = joint->angularSoftness.massScale;
 			impulseScale = joint->angularSoftness.impulseScale;
 		}
 
-		float Cdot = wB - wA;
-		float impulse = -massScale * joint->axialMass * ( Cdot + bias ) - impulseScale * joint->angularImpulse;
+		b2Float Cdot = wB - wA;
+		b2Float impulse = -massScale * joint->axialMass * ( Cdot + bias ) - impulseScale * joint->angularImpulse;
 		joint->angularImpulse += impulse;
 
 		wA -= iA * impulse;
@@ -249,8 +249,8 @@ void b2SolveWeldJoint( b2JointSim* base, b2StepContext* context, bool useBias )
 		b2Vec2 rB = b2RotateVector( stateB->deltaRotation, joint->anchorB );
 
 		b2Vec2 bias = b2Vec2_zero;
-		float massScale = 1.0f;
-		float impulseScale = 0.0f;
+		b2Float massScale = 1.0f;
+		b2Float impulseScale = 0.0f;
 		if ( useBias || joint->linearHertz > 0.0f )
 		{
 			b2Vec2 dcA = stateA->deltaPosition;

@@ -30,15 +30,15 @@
 #include "atomic.h"
 
 // This allows the user to change the length units at runtime
-float b2_lengthUnitsPerMeter = 1.0f;
+b2Float b2_lengthUnitsPerMeter = 1.0f;
 
-void b2SetLengthUnitsPerMeter( float lengthUnits )
+void b2SetLengthUnitsPerMeter( b2Float lengthUnits )
 {
 	B2_ASSERT( b2IsValidFloat( lengthUnits ) && lengthUnits > 0.0f );
 	b2_lengthUnitsPerMeter = lengthUnits;
 }
 
-float b2GetLengthUnitsPerMeter( void )
+b2Float b2GetLengthUnitsPerMeter( void )
 {
 	return b2_lengthUnitsPerMeter;
 }

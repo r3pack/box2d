@@ -47,7 +47,7 @@ typedef struct b2Joint
 	int islandPrev;
 	int islandNext;
 
-	float drawSize;
+	b2Float drawSize;
 
 	b2JointType type;
 
@@ -62,19 +62,19 @@ typedef struct b2Joint
 
 typedef struct b2DistanceJoint
 {
-	float length;
-	float hertz;
-	float dampingRatio;
-	float minLength;
-	float maxLength;
+	b2Float length;
+	b2Float hertz;
+	b2Float dampingRatio;
+	b2Float minLength;
+	b2Float maxLength;
 
-	float maxMotorForce;
-	float motorSpeed;
+	b2Float maxMotorForce;
+	b2Float motorSpeed;
 
-	float impulse;
-	float lowerImpulse;
-	float upperImpulse;
-	float motorImpulse;
+	b2Float impulse;
+	b2Float lowerImpulse;
+	b2Float upperImpulse;
+	b2Float motorImpulse;
 
 	int indexA;
 	int indexB;
@@ -82,7 +82,7 @@ typedef struct b2DistanceJoint
 	b2Vec2 anchorB;
 	b2Vec2 deltaCenter;
 	b2Softness distanceSoftness;
-	float axialMass;
+	b2Float axialMass;
 
 	bool enableSpring;
 	bool enableLimit;
@@ -92,32 +92,32 @@ typedef struct b2DistanceJoint
 typedef struct b2MotorJoint
 {
 	b2Vec2 linearOffset;
-	float angularOffset;
+	b2Float angularOffset;
 	b2Vec2 linearImpulse;
-	float angularImpulse;
-	float maxForce;
-	float maxTorque;
-	float correctionFactor;
+	b2Float angularImpulse;
+	b2Float maxForce;
+	b2Float maxTorque;
+	b2Float correctionFactor;
 
 	int indexA;
 	int indexB;
 	b2Vec2 anchorA;
 	b2Vec2 anchorB;
 	b2Vec2 deltaCenter;
-	float deltaAngle;
+	b2Float deltaAngle;
 	b2Mat22 linearMass;
-	float angularMass;
+	b2Float angularMass;
 } b2MotorJoint;
 
 typedef struct b2MouseJoint
 {
 	b2Vec2 targetA;
-	float hertz;
-	float dampingRatio;
-	float maxForce;
+	b2Float hertz;
+	b2Float dampingRatio;
+	b2Float maxForce;
 
 	b2Vec2 linearImpulse;
-	float angularImpulse;
+	b2Float angularImpulse;
 
 	b2Softness linearSoftness;
 	b2Softness angularSoftness;
@@ -131,17 +131,17 @@ typedef struct b2PrismaticJoint
 {
 	b2Vec2 localAxisA;
 	b2Vec2 impulse;
-	float springImpulse;
-	float motorImpulse;
-	float lowerImpulse;
-	float upperImpulse;
-	float hertz;
-	float dampingRatio;
-	float maxMotorForce;
-	float motorSpeed;
-	float referenceAngle;
-	float lowerTranslation;
-	float upperTranslation;
+	b2Float springImpulse;
+	b2Float motorImpulse;
+	b2Float lowerImpulse;
+	b2Float upperImpulse;
+	b2Float hertz;
+	b2Float dampingRatio;
+	b2Float maxMotorForce;
+	b2Float motorSpeed;
+	b2Float referenceAngle;
+	b2Float lowerTranslation;
+	b2Float upperTranslation;
 
 	int indexA;
 	int indexB;
@@ -149,8 +149,8 @@ typedef struct b2PrismaticJoint
 	b2Vec2 anchorB;
 	b2Vec2 axisA;
 	b2Vec2 deltaCenter;
-	float deltaAngle;
-	float axialMass;
+	b2Float deltaAngle;
+	b2Float axialMass;
 	b2Softness springSoftness;
 
 	bool enableSpring;
@@ -161,25 +161,25 @@ typedef struct b2PrismaticJoint
 typedef struct b2RevoluteJoint
 {
 	b2Vec2 linearImpulse;
-	float springImpulse;
-	float motorImpulse;
-	float lowerImpulse;
-	float upperImpulse;
-	float hertz;
-	float dampingRatio;
-	float maxMotorTorque;
-	float motorSpeed;
-	float referenceAngle;
-	float lowerAngle;
-	float upperAngle;
+	b2Float springImpulse;
+	b2Float motorImpulse;
+	b2Float lowerImpulse;
+	b2Float upperImpulse;
+	b2Float hertz;
+	b2Float dampingRatio;
+	b2Float maxMotorTorque;
+	b2Float motorSpeed;
+	b2Float referenceAngle;
+	b2Float lowerAngle;
+	b2Float upperAngle;
 
 	int indexA;
 	int indexB;
 	b2Vec2 anchorA;
 	b2Vec2 anchorB;
 	b2Vec2 deltaCenter;
-	float deltaAngle;
-	float axialMass;
+	b2Float deltaAngle;
+	b2Float axialMass;
 	b2Softness springSoftness;
 
 	bool enableSpring;
@@ -189,40 +189,40 @@ typedef struct b2RevoluteJoint
 
 typedef struct b2WeldJoint
 {
-	float referenceAngle;
-	float linearHertz;
-	float linearDampingRatio;
-	float angularHertz;
-	float angularDampingRatio;
+	b2Float referenceAngle;
+	b2Float linearHertz;
+	b2Float linearDampingRatio;
+	b2Float angularHertz;
+	b2Float angularDampingRatio;
 
 	b2Softness linearSoftness;
 	b2Softness angularSoftness;
 	b2Vec2 linearImpulse;
-	float angularImpulse;
+	b2Float angularImpulse;
 
 	int indexA;
 	int indexB;
 	b2Vec2 anchorA;
 	b2Vec2 anchorB;
 	b2Vec2 deltaCenter;
-	float deltaAngle;
-	float axialMass;
+	b2Float deltaAngle;
+	b2Float axialMass;
 } b2WeldJoint;
 
 typedef struct b2WheelJoint
 {
 	b2Vec2 localAxisA;
-	float perpImpulse;
-	float motorImpulse;
-	float springImpulse;
-	float lowerImpulse;
-	float upperImpulse;
-	float maxMotorTorque;
-	float motorSpeed;
-	float lowerTranslation;
-	float upperTranslation;
-	float hertz;
-	float dampingRatio;
+	b2Float perpImpulse;
+	b2Float motorImpulse;
+	b2Float springImpulse;
+	b2Float lowerImpulse;
+	b2Float upperImpulse;
+	b2Float maxMotorTorque;
+	b2Float motorSpeed;
+	b2Float lowerTranslation;
+	b2Float upperTranslation;
+	b2Float hertz;
+	b2Float dampingRatio;
 
 	int indexA;
 	int indexB;
@@ -230,9 +230,9 @@ typedef struct b2WheelJoint
 	b2Vec2 anchorB;
 	b2Vec2 axisA;
 	b2Vec2 deltaCenter;
-	float perpMass;
-	float motorMass;
-	float axialMass;
+	b2Float perpMass;
+	b2Float motorMass;
+	b2Float axialMass;
 	b2Softness springSoftness;
 
 	bool enableSpring;
@@ -255,8 +255,8 @@ typedef struct b2JointSim
 	b2Vec2 localOriginAnchorA;
 	b2Vec2 localOriginAnchorB;
 
-	float invMassA, invMassB;
-	float invIA, invIB;
+	b2Float invMassA, invMassB;
+	b2Float invIA, invIB;
 
 	union
 	{
@@ -294,12 +294,12 @@ b2Vec2 b2GetRevoluteJointForce( b2World* world, b2JointSim* base );
 b2Vec2 b2GetWeldJointForce( b2World* world, b2JointSim* base );
 b2Vec2 b2GetWheelJointForce( b2World* world, b2JointSim* base );
 
-float b2GetMotorJointTorque( b2World* world, b2JointSim* base );
-float b2GetMouseJointTorque( b2World* world, b2JointSim* base );
-float b2GetPrismaticJointTorque( b2World* world, b2JointSim* base );
-float b2GetRevoluteJointTorque( b2World* world, b2JointSim* base );
-float b2GetWeldJointTorque( b2World* world, b2JointSim* base );
-float b2GetWheelJointTorque( b2World* world, b2JointSim* base );
+b2Float b2GetMotorJointTorque( b2World* world, b2JointSim* base );
+b2Float b2GetMouseJointTorque( b2World* world, b2JointSim* base );
+b2Float b2GetPrismaticJointTorque( b2World* world, b2JointSim* base );
+b2Float b2GetRevoluteJointTorque( b2World* world, b2JointSim* base );
+b2Float b2GetWeldJointTorque( b2World* world, b2JointSim* base );
+b2Float b2GetWheelJointTorque( b2World* world, b2JointSim* base );
 
 void b2PrepareDistanceJoint( b2JointSim* base, b2StepContext* context );
 void b2PrepareMotorJoint( b2JointSim* base, b2StepContext* context );
@@ -327,7 +327,7 @@ void b2SolveWheelJoint( b2JointSim* base, b2StepContext* context, bool useBias )
 
 void b2DrawDistanceJoint( b2DebugDraw* draw, b2JointSim* base, b2Transform transformA, b2Transform transformB );
 void b2DrawPrismaticJoint( b2DebugDraw* draw, b2JointSim* base, b2Transform transformA, b2Transform transformB );
-void b2DrawRevoluteJoint( b2DebugDraw* draw, b2JointSim* base, b2Transform transformA, b2Transform transformB, float drawSize );
+void b2DrawRevoluteJoint( b2DebugDraw* draw, b2JointSim* base, b2Transform transformA, b2Transform transformB, b2Float drawSize );
 void b2DrawWheelJoint( b2DebugDraw* draw, b2JointSim* base, b2Transform transformA, b2Transform transformB );
 
 // Define inline functions for arrays

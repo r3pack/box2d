@@ -707,8 +707,8 @@ void b2Body_SetTransform( b2BodyId bodyId, b2Vec2 position, b2Rot rotation )
 	b2BroadPhase* broadPhase = &world->broadPhase;
 
 	b2Transform transform = bodySim->transform;
-	const float margin = B2_AABB_MARGIN;
-	const float speculativeDistance = B2_SPECULATIVE_DISTANCE;
+	const b2Float margin = B2_AABB_MARGIN;
+	const b2Float speculativeDistance = B2_SPECULATIVE_DISTANCE;
 
 	int shapeId = body->headShapeId;
 	while ( shapeId != B2_NULL_INDEX )
@@ -753,7 +753,7 @@ b2Vec2 b2Body_GetLinearVelocity( b2BodyId bodyId )
 	return b2Vec2_zero;
 }
 
-float b2Body_GetAngularVelocity( b2BodyId bodyId )
+b2Float b2Body_GetAngularVelocity( b2BodyId bodyId )
 {
 	b2World* world = b2GetWorld( bodyId.world0 );
 	b2Body* body = b2GetBodyFullId( world, bodyId );
@@ -789,7 +789,7 @@ void b2Body_SetLinearVelocity( b2BodyId bodyId, b2Vec2 linearVelocity )
 	state->linearVelocity = linearVelocity;
 }
 
-void b2Body_SetAngularVelocity( b2BodyId bodyId, float angularVelocity )
+void b2Body_SetAngularVelocity( b2BodyId bodyId, b2Float angularVelocity )
 {
 	b2World* world = b2GetWorld( bodyId.world0 );
 	b2Body* body = b2GetBodyFullId( world, bodyId );
@@ -884,7 +884,7 @@ void b2Body_ApplyForceToCenter( b2BodyId bodyId, b2Vec2 force, bool wake )
 	}
 }
 
-void b2Body_ApplyTorque( b2BodyId bodyId, float torque, bool wake )
+void b2Body_ApplyTorque( b2BodyId bodyId, b2Float torque, bool wake )
 {
 	b2World* world = b2GetWorld( bodyId.world0 );
 	b2Body* body = b2GetBodyFullId( world, bodyId );
@@ -942,7 +942,7 @@ void b2Body_ApplyLinearImpulseToCenter( b2BodyId bodyId, b2Vec2 impulse, bool wa
 	}
 }
 
-void b2Body_ApplyAngularImpulse( b2BodyId bodyId, float impulse, bool wake )
+void b2Body_ApplyAngularImpulse( b2BodyId bodyId, b2Float impulse, bool wake )
 {
 	B2_ASSERT( b2Body_IsValid( bodyId ) );
 	b2World* world = b2GetWorld( bodyId.world0 );
@@ -1272,14 +1272,14 @@ void* b2Body_GetUserData( b2BodyId bodyId )
 	return body->userData;
 }
 
-float b2Body_GetMass( b2BodyId bodyId )
+b2Float b2Body_GetMass( b2BodyId bodyId )
 {
 	b2World* world = b2GetWorld( bodyId.world0 );
 	b2Body* body = b2GetBodyFullId( world, bodyId );
 	return body->mass;
 }
 
-float b2Body_GetRotationalInertia( b2BodyId bodyId )
+b2Float b2Body_GetRotationalInertia( b2BodyId bodyId )
 {
 	b2World* world = b2GetWorld( bodyId.world0 );
 	b2Body* body = b2GetBodyFullId( world, bodyId );
@@ -1350,7 +1350,7 @@ void b2Body_ApplyMassFromShapes( b2BodyId bodyId )
 	b2UpdateBodyMassData( world, body );
 }
 
-void b2Body_SetLinearDamping( b2BodyId bodyId, float linearDamping )
+void b2Body_SetLinearDamping( b2BodyId bodyId, b2Float linearDamping )
 {
 	B2_ASSERT( b2IsValidFloat( linearDamping ) && linearDamping >= 0.0f );
 
@@ -1365,7 +1365,7 @@ void b2Body_SetLinearDamping( b2BodyId bodyId, float linearDamping )
 	bodySim->linearDamping = linearDamping;
 }
 
-float b2Body_GetLinearDamping( b2BodyId bodyId )
+b2Float b2Body_GetLinearDamping( b2BodyId bodyId )
 {
 	b2World* world = b2GetWorld( bodyId.world0 );
 	b2Body* body = b2GetBodyFullId( world, bodyId );
@@ -1373,7 +1373,7 @@ float b2Body_GetLinearDamping( b2BodyId bodyId )
 	return bodySim->linearDamping;
 }
 
-void b2Body_SetAngularDamping( b2BodyId bodyId, float angularDamping )
+void b2Body_SetAngularDamping( b2BodyId bodyId, b2Float angularDamping )
 {
 	B2_ASSERT( b2IsValidFloat( angularDamping ) && angularDamping >= 0.0f );
 
@@ -1388,7 +1388,7 @@ void b2Body_SetAngularDamping( b2BodyId bodyId, float angularDamping )
 	bodySim->angularDamping = angularDamping;
 }
 
-float b2Body_GetAngularDamping( b2BodyId bodyId )
+b2Float b2Body_GetAngularDamping( b2BodyId bodyId )
 {
 	b2World* world = b2GetWorld( bodyId.world0 );
 	b2Body* body = b2GetBodyFullId( world, bodyId );
@@ -1396,7 +1396,7 @@ float b2Body_GetAngularDamping( b2BodyId bodyId )
 	return bodySim->angularDamping;
 }
 
-void b2Body_SetGravityScale( b2BodyId bodyId, float gravityScale )
+void b2Body_SetGravityScale( b2BodyId bodyId, b2Float gravityScale )
 {
 	B2_ASSERT( b2Body_IsValid( bodyId ) );
 	B2_ASSERT( b2IsValidFloat( gravityScale ) );
@@ -1412,7 +1412,7 @@ void b2Body_SetGravityScale( b2BodyId bodyId, float gravityScale )
 	bodySim->gravityScale = gravityScale;
 }
 
-float b2Body_GetGravityScale( b2BodyId bodyId )
+b2Float b2Body_GetGravityScale( b2BodyId bodyId )
 {
 	B2_ASSERT( b2Body_IsValid( bodyId ) );
 	b2World* world = b2GetWorld( bodyId.world0 );
@@ -1469,14 +1469,14 @@ bool b2Body_IsSleepEnabled( b2BodyId bodyId )
 	return body->enableSleep;
 }
 
-void b2Body_SetSleepThreshold( b2BodyId bodyId, float sleepThreshold )
+void b2Body_SetSleepThreshold( b2BodyId bodyId, b2Float sleepThreshold )
 {
 	b2World* world = b2GetWorld( bodyId.world0 );
 	b2Body* body = b2GetBodyFullId( world, bodyId );
 	body->sleepThreshold = sleepThreshold;
 }
 
-float b2Body_GetSleepThreshold( b2BodyId bodyId )
+b2Float b2Body_GetSleepThreshold( b2BodyId bodyId )
 {
 	b2World* world = b2GetWorld( bodyId.world0 );
 	b2Body* body = b2GetBodyFullId( world, bodyId );

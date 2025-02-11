@@ -5,13 +5,14 @@
 #include "constants.h"
 #include "core.h"
 
+#include "box2d/base.h"
 #include "box2d/collision.h"
 #include "box2d/math_functions.h"
 
 #include <float.h>
 #include <stddef.h>
 
-b2Transform b2GetSweepTransform( const b2Sweep* sweep, float time )
+b2Transform b2GetSweepTransform( const b2Sweep* sweep, b2Float time )
 {
 	// https://fgiesen.wordpress.com/2012/08/15/linear-interpolation-past-present-and-future/
 	b2Transform xf;
@@ -37,12 +38,12 @@ b2SegmentDistanceResult b2SegmentDistance( b2Vec2 p1, b2Vec2 q1, b2Vec2 p2, b2Ve
 	b2Vec2 d1 = b2Sub( q1, p1 );
 	b2Vec2 d2 = b2Sub( q2, p2 );
 	b2Vec2 r = b2Sub( p1, p2 );
-	float dd1 = b2Dot( d1, d1 );
-	float dd2 = b2Dot( d2, d2 );
-	float rd1 = b2Dot( r, d1 );
-	float rd2 = b2Dot( r, d2 );
+	b2Float dd1 = b2Dot( d1, d1 );
+	b2Float dd2 = b2Dot( d2, d2 );
+	b2Float rd1 = b2Dot( r, d1 );
+	b2Float rd2 = b2Dot( r, d2 );
 
-	const float epsSqr = FLT_EPSILON * FLT_EPSILON;
+	const b2Float epsSqr = FLT_EPSILON * FLT_EPSILON;
 
 	if ( dd1 < epsSqr || dd2 < epsSqr )
 	{
@@ -68,12 +69,12 @@ b2SegmentDistanceResult b2SegmentDistance( b2Vec2 p1, b2Vec2 q1, b2Vec2 p2, b2Ve
 	else
 	{
 		// Non-degenerate segments
-		float d12 = b2Dot( d1, d2 );
+		b2Float d12 = b2Dot( d1, d2 );
 
-		float denom = dd1 * dd2 - d12 * d12;
+		b2Float denom = dd1 * dd2 - d12 * d12;
 
 		// Fraction on segment 1
-		float f1 = 0.0f;
+		b2Float f1 = 0.0f;
 		if ( denom != 0.0f )
 		{
 			// not parallel
@@ -81,7 +82,7 @@ b2SegmentDistanceResult b2SegmentDistance( b2Vec2 p1, b2Vec2 q1, b2Vec2 p2, b2Ve
 		}
 
 		// Compute point on segment 2 closest to p1 + f1 * d1
-		float f2 = ( d12 * f1 + rd2 ) / dd2;
+		b2Float f2 = ( d12 * f1 + rd2 ) / dd2;
 
 		// Clamping of segment 2 requires a do over on segment 1
 		if ( f2 < 0.0f )
@@ -107,7 +108,7 @@ b2SegmentDistanceResult b2SegmentDistance( b2Vec2 p1, b2Vec2 q1, b2Vec2 p2, b2Ve
 
 // GJK using Voronoi regions (Christer Ericson) and Barycentric coordinates.
 // todo try not copying
-b2ShapeProxy b2MakeProxy( const b2Vec2* vertices, int count, float radius )
+b2ShapeProxy b2MakeProxy( const b2Vec2* vertices, int count, b2Float radius )
 {
 	count = b2MinInt( count, B2_MAX_POLYGON_VERTICES );
 	b2ShapeProxy proxy;
@@ -120,12 +121,12 @@ b2ShapeProxy b2MakeProxy( const b2Vec2* vertices, int count, float radius )
 	return proxy;
 }
 
-static b2Vec2 b2Weight2( float a1, b2Vec2 w1, float a2, b2Vec2 w2 )
+static b2Vec2 b2Weight2( b2Float a1, b2Vec2 w1, b2Float a2, b2Vec2 w2 )
 {
 	return ( b2Vec2 ){ a1 * w1.x + a2 * w2.x, a1 * w1.y + a2 * w2.y };
 }
 
-static b2Vec2 b2Weight3( float a1, b2Vec2 w1, float a2, b2Vec2 w2, float a3, b2Vec2 w3 )
+static b2Vec2 b2Weight3( b2Float a1, b2Vec2 w1, b2Float a2, b2Vec2 w2, b2Float a3, b2Vec2 w3 )
 {
 	return ( b2Vec2 ){ a1 * w1.x + a2 * w2.x + a3 * w3.x, a1 * w1.y + a2 * w2.y + a3 * w3.y };
 }
@@ -133,10 +134,10 @@ static b2Vec2 b2Weight3( float a1, b2Vec2 w1, float a2, b2Vec2 w2, float a3, b2V
 static int b2FindSupport( const b2ShapeProxy* proxy, b2Vec2 direction )
 {
 	int bestIndex = 0;
-	float bestValue = b2Dot( proxy->points[0], direction );
+	b2Float bestValue = b2Dot( proxy->points[0], direction );
 	for ( int i = 1; i < proxy->count; ++i )
 	{
-		float value = b2Dot( proxy->points[i], direction );
+		b2Float value = b2Dot( proxy->points[i], direction );
 		if ( value > bestValue )
 		{
 			bestIndex = i;
@@ -218,7 +219,7 @@ static b2Vec2 b2ComputeSimplexSearchDirection( const b2Simplex* simplex )
 		case 2:
 		{
 			b2Vec2 e12 = b2Sub( simplex->v2.w, simplex->v1.w );
-			float sgn = b2Cross( e12, b2Neg( simplex->v1.w ) );
+			b2Float sgn = b2Cross( e12, b2Neg( simplex->v1.w ) );
 			if ( sgn > 0.0f )
 			{
 				// Origin is left of e12.
@@ -321,7 +322,7 @@ static void b2SolveSimplex2( b2Simplex* s )
 	b2Vec2 e12 = b2Sub( w2, w1 );
 
 	// w1 region
-	float d12_2 = -b2Dot( w1, e12 );
+	b2Float d12_2 = -b2Dot( w1, e12 );
 	if ( d12_2 <= 0.0f )
 	{
 		// a2 <= 0, so we clamp it to 0
@@ -331,7 +332,7 @@ static void b2SolveSimplex2( b2Simplex* s )
 	}
 
 	// w2 region
-	float d12_1 = b2Dot( w2, e12 );
+	b2Float d12_1 = b2Dot( w2, e12 );
 	if ( d12_1 <= 0.0f )
 	{
 		// a1 <= 0, so we clamp it to 0
@@ -342,7 +343,7 @@ static void b2SolveSimplex2( b2Simplex* s )
 	}
 
 	// Must be in e12 region.
-	float inv_d12 = 1.0f / ( d12_1 + d12_2 );
+	b2Float inv_d12 = 1.0f / ( d12_1 + d12_2 );
 	s->v1.a = d12_1 * inv_d12;
 	s->v2.a = d12_2 * inv_d12;
 	s->count = 2;
@@ -359,37 +360,37 @@ static void b2SolveSimplex3( b2Simplex* s )
 	// [w1.e12 w2.e12][a2] = [0]
 	// a3 = 0
 	b2Vec2 e12 = b2Sub( w2, w1 );
-	float w1e12 = b2Dot( w1, e12 );
-	float w2e12 = b2Dot( w2, e12 );
-	float d12_1 = w2e12;
-	float d12_2 = -w1e12;
+	b2Float w1e12 = b2Dot( w1, e12 );
+	b2Float w2e12 = b2Dot( w2, e12 );
+	b2Float d12_1 = w2e12;
+	b2Float d12_2 = -w1e12;
 
 	// Edge13
 	// [1      1     ][a1] = [1]
 	// [w1.e13 w3.e13][a3] = [0]
 	// a2 = 0
 	b2Vec2 e13 = b2Sub( w3, w1 );
-	float w1e13 = b2Dot( w1, e13 );
-	float w3e13 = b2Dot( w3, e13 );
-	float d13_1 = w3e13;
-	float d13_2 = -w1e13;
+	b2Float w1e13 = b2Dot( w1, e13 );
+	b2Float w3e13 = b2Dot( w3, e13 );
+	b2Float d13_1 = w3e13;
+	b2Float d13_2 = -w1e13;
 
 	// Edge23
 	// [1      1     ][a2] = [1]
 	// [w2.e23 w3.e23][a3] = [0]
 	// a1 = 0
 	b2Vec2 e23 = b2Sub( w3, w2 );
-	float w2e23 = b2Dot( w2, e23 );
-	float w3e23 = b2Dot( w3, e23 );
-	float d23_1 = w3e23;
-	float d23_2 = -w2e23;
+	b2Float w2e23 = b2Dot( w2, e23 );
+	b2Float w3e23 = b2Dot( w3, e23 );
+	b2Float d23_1 = w3e23;
+	b2Float d23_2 = -w2e23;
 
 	// Triangle123
-	float n123 = b2Cross( e12, e13 );
+	b2Float n123 = b2Cross( e12, e13 );
 
-	float d123_1 = n123 * b2Cross( w2, w3 );
-	float d123_2 = n123 * b2Cross( w3, w1 );
-	float d123_3 = n123 * b2Cross( w1, w2 );
+	b2Float d123_1 = n123 * b2Cross( w2, w3 );
+	b2Float d123_2 = n123 * b2Cross( w3, w1 );
+	b2Float d123_3 = n123 * b2Cross( w1, w2 );
 
 	// w1 region
 	if ( d12_2 <= 0.0f && d13_2 <= 0.0f )
@@ -402,7 +403,7 @@ static void b2SolveSimplex3( b2Simplex* s )
 	// e12
 	if ( d12_1 > 0.0f && d12_2 > 0.0f && d123_3 <= 0.0f )
 	{
-		float inv_d12 = 1.0f / ( d12_1 + d12_2 );
+		b2Float inv_d12 = 1.0f / ( d12_1 + d12_2 );
 		s->v1.a = d12_1 * inv_d12;
 		s->v2.a = d12_2 * inv_d12;
 		s->count = 2;
@@ -412,7 +413,7 @@ static void b2SolveSimplex3( b2Simplex* s )
 	// e13
 	if ( d13_1 > 0.0f && d13_2 > 0.0f && d123_2 <= 0.0f )
 	{
-		float inv_d13 = 1.0f / ( d13_1 + d13_2 );
+		b2Float inv_d13 = 1.0f / ( d13_1 + d13_2 );
 		s->v1.a = d13_1 * inv_d13;
 		s->v3.a = d13_2 * inv_d13;
 		s->count = 2;
@@ -441,7 +442,7 @@ static void b2SolveSimplex3( b2Simplex* s )
 	// e23
 	if ( d23_1 > 0.0f && d23_2 > 0.0f && d123_1 <= 0.0f )
 	{
-		float inv_d23 = 1.0f / ( d23_1 + d23_2 );
+		b2Float inv_d23 = 1.0f / ( d23_1 + d23_2 );
 		s->v2.a = d23_1 * inv_d23;
 		s->v3.a = d23_2 * inv_d23;
 		s->count = 2;
@@ -450,7 +451,7 @@ static void b2SolveSimplex3( b2Simplex* s )
 	}
 
 	// Must be in triangle123
-	float inv_d123 = 1.0f / ( d123_1 + d123_2 + d123_3 );
+	b2Float inv_d123 = 1.0f / ( d123_1 + d123_2 + d123_3 );
 	s->v1.a = d123_1 * inv_d123;
 	s->v2.a = d123_2 * inv_d123;
 	s->v3.a = d123_3 * inv_d123;
@@ -604,8 +605,8 @@ b2DistanceOutput b2ShapeDistance( b2SimplexCache* cache, const b2DistanceInput* 
 		{
 			// Keep closest points on perimeter even if overlapped, this way
 			// the points move smoothly.
-			float rA = proxyA->radius;
-			float rB = proxyB->radius;
+			b2Float rA = proxyA->radius;
+			b2Float rB = proxyB->radius;
 			output.distance = b2MaxFloat( 0.0f, output.distance - rA - rB );
 			b2Vec2 normal = b2Normalize( b2Sub( output.pointB, output.pointA ) );
 			b2Vec2 offsetA = ( b2Vec2 ){ rA * normal.x, rA * normal.y };
@@ -645,11 +646,11 @@ b2CastOutput b2ShapeCast( const b2ShapeCastPairInput* input )
 		proxyB.points[i] = b2TransformPoint( xf, input->proxyB.points[i] );
 	}
 
-	float radius = proxyA.radius + proxyB.radius;
+	b2Float radius = proxyA.radius + proxyB.radius;
 
 	b2Vec2 r = b2RotateVector( xf.q, input->translationB );
-	float lambda = 0.0f;
-	float maxFraction = input->maxFraction;
+	b2Float lambda = 0.0f;
+	b2Float maxFraction = input->maxFraction;
 
 	// Initial simplex
 	b2Simplex simplex;
@@ -666,8 +667,8 @@ b2CastOutput b2ShapeCast( const b2ShapeCastPairInput* input )
 	b2Vec2 v = b2Sub( wA, wB );
 
 	// Sigma is the target distance between proxies
-	const float linearSlop = B2_LINEAR_SLOP;
-	const float sigma = b2MaxFloat( linearSlop, radius - linearSlop );
+	const b2Float linearSlop = B2_LINEAR_SLOP;
+	const b2Float sigma = b2MaxFloat( linearSlop, radius - linearSlop );
 
 	// Main iteration loop.
 	const int k_maxIters = 20;
@@ -689,8 +690,8 @@ b2CastOutput b2ShapeCast( const b2ShapeCastPairInput* input )
 		v = b2Normalize( v );
 
 		// Intersect ray with plane
-		float vp = b2Dot( v, p );
-		float vr = b2Dot( v, r );
+		b2Float vp = b2Dot( v, p );
+		b2Float vr = b2Dot( v, r );
 		if ( vp - sigma > lambda * vr )
 		{
 			if ( vr <= 0.0f )
@@ -778,7 +779,7 @@ b2CastOutput b2ShapeCast( const b2ShapeCastPairInput* input )
 
 // Warning: writing to these globals significantly slows multithreading performance
 #if B2_SNOOP_TOI_COUNTERS
-float b2_toiTime, b2_toiMaxTime;
+b2Float b2_toiTime, b2_toiMaxTime;
 int b2_toiCalls, b2_toiDistanceIterations, b2_toiMaxDistanceIterations;
 int b2_toiRootIterations, b2_toiMaxRootIterations;
 int b2_toiFailedCount;
@@ -805,7 +806,7 @@ typedef struct b2SeparationFunction
 } b2SeparationFunction;
 
 static b2SeparationFunction b2MakeSeparationFunction( const b2SimplexCache* cache, const b2ShapeProxy* proxyA, const b2Sweep* sweepA,
-											   const b2ShapeProxy* proxyB, const b2Sweep* sweepB, float t1 )
+											   const b2ShapeProxy* proxyB, const b2Sweep* sweepB, b2Float t1 )
 {
 	b2SeparationFunction f;
 
@@ -849,7 +850,7 @@ static b2SeparationFunction b2MakeSeparationFunction( const b2SimplexCache* cach
 		b2Vec2 localPointA = proxyA->points[cache->indexA[0]];
 		b2Vec2 pointA = b2TransformPoint( xfA, localPointA );
 
-		float s = b2Dot( b2Sub( pointA, pointB ), normal );
+		b2Float s = b2Dot( b2Sub( pointA, pointB ), normal );
 		if ( s < 0.0f )
 		{
 			f.axis = b2Neg( f.axis );
@@ -872,7 +873,7 @@ static b2SeparationFunction b2MakeSeparationFunction( const b2SimplexCache* cach
 	b2Vec2 localPointB = proxyB->points[cache->indexB[0]];
 	b2Vec2 pointB = b2TransformPoint( xfB, localPointB );
 
-	float s = b2Dot( b2Sub( pointB, pointA ), normal );
+	b2Float s = b2Dot( b2Sub( pointB, pointA ), normal );
 	if ( s < 0.0f )
 	{
 		f.axis = b2Neg( f.axis );
@@ -880,7 +881,7 @@ static b2SeparationFunction b2MakeSeparationFunction( const b2SimplexCache* cach
 	return f;
 }
 
-static float b2FindMinSeparation( const b2SeparationFunction* f, int* indexA, int* indexB, float t )
+static b2Float b2FindMinSeparation( const b2SeparationFunction* f, int* indexA, int* indexB, b2Float t )
 {
 	b2Transform xfA = b2GetSweepTransform( &f->sweepA, t );
 	b2Transform xfB = b2GetSweepTransform( &f->sweepB, t );
@@ -901,7 +902,7 @@ static float b2FindMinSeparation( const b2SeparationFunction* f, int* indexA, in
 			b2Vec2 pointA = b2TransformPoint( xfA, localPointA );
 			b2Vec2 pointB = b2TransformPoint( xfB, localPointB );
 
-			float separation = b2Dot( b2Sub( pointB, pointA ), f->axis );
+			b2Float separation = b2Dot( b2Sub( pointB, pointA ), f->axis );
 			return separation;
 		}
 
@@ -918,7 +919,7 @@ static float b2FindMinSeparation( const b2SeparationFunction* f, int* indexA, in
 			b2Vec2 localPointB = f->proxyB->points[*indexB];
 			b2Vec2 pointB = b2TransformPoint( xfB, localPointB );
 
-			float separation = b2Dot( b2Sub( pointB, pointA ), normal );
+			b2Float separation = b2Dot( b2Sub( pointB, pointA ), normal );
 			return separation;
 		}
 
@@ -935,7 +936,7 @@ static float b2FindMinSeparation( const b2SeparationFunction* f, int* indexA, in
 			b2Vec2 localPointA = f->proxyA->points[*indexA];
 			b2Vec2 pointA = b2TransformPoint( xfA, localPointA );
 
-			float separation = b2Dot( b2Sub( pointA, pointB ), normal );
+			b2Float separation = b2Dot( b2Sub( pointA, pointB ), normal );
 			return separation;
 		}
 
@@ -948,7 +949,7 @@ static float b2FindMinSeparation( const b2SeparationFunction* f, int* indexA, in
 }
 
 //
-static float b2EvaluateSeparation( const b2SeparationFunction* f, int indexA, int indexB, float t )
+static b2Float b2EvaluateSeparation( const b2SeparationFunction* f, int indexA, int indexB, b2Float t )
 {
 	b2Transform xfA = b2GetSweepTransform( &f->sweepA, t );
 	b2Transform xfB = b2GetSweepTransform( &f->sweepB, t );
@@ -963,7 +964,7 @@ static float b2EvaluateSeparation( const b2SeparationFunction* f, int indexA, in
 			b2Vec2 pointA = b2TransformPoint( xfA, localPointA );
 			b2Vec2 pointB = b2TransformPoint( xfB, localPointB );
 
-			float separation = b2Dot( b2Sub( pointB, pointA ), f->axis );
+			b2Float separation = b2Dot( b2Sub( pointB, pointA ), f->axis );
 			return separation;
 		}
 
@@ -975,7 +976,7 @@ static float b2EvaluateSeparation( const b2SeparationFunction* f, int indexA, in
 			b2Vec2 localPointB = f->proxyB->points[indexB];
 			b2Vec2 pointB = b2TransformPoint( xfB, localPointB );
 
-			float separation = b2Dot( b2Sub( pointB, pointA ), normal );
+			b2Float separation = b2Dot( b2Sub( pointB, pointA ), normal );
 			return separation;
 		}
 
@@ -987,7 +988,7 @@ static float b2EvaluateSeparation( const b2SeparationFunction* f, int indexA, in
 			b2Vec2 localPointA = f->proxyA->points[indexA];
 			b2Vec2 pointA = b2TransformPoint( xfA, localPointA );
 
-			float separation = b2Dot( b2Sub( pointA, pointB ), normal );
+			b2Float separation = b2Dot( b2Sub( pointA, pointB ), normal );
 			return separation;
 		}
 
@@ -1022,16 +1023,16 @@ b2TOIOutput b2TimeOfImpact( const b2TOIInput* input )
 	const b2ShapeProxy* proxyA = &input->proxyA;
 	const b2ShapeProxy* proxyB = &input->proxyB;
 
-	float tMax = input->maxFraction;
+	b2Float tMax = input->maxFraction;
 
-	float totalRadius = proxyA->radius + proxyB->radius;
+	b2Float totalRadius = proxyA->radius + proxyB->radius;
 	// todo_erin consider different target
-	// float target = b2MaxFloat( B2_LINEAR_SLOP, totalRadius );
-	float target = b2MaxFloat( B2_LINEAR_SLOP, totalRadius - B2_LINEAR_SLOP );
-	float tolerance = 0.25f * B2_LINEAR_SLOP;
+	// b2Float target = b2MaxFloat( B2_LINEAR_SLOP, totalRadius );
+	b2Float target = b2MaxFloat( B2_LINEAR_SLOP, totalRadius - B2_LINEAR_SLOP );
+	b2Float tolerance = 0.25f * B2_LINEAR_SLOP;
 	B2_ASSERT( target > tolerance );
 
-	float t1 = 0.0f;
+	b2Float t1 = 0.0f;
 	const int k_maxIterations = 20;
 	int distanceIterations = 0;
 
@@ -1089,17 +1090,17 @@ b2TOIOutput b2TimeOfImpact( const b2TOIInput* input )
 		// Dump the curve seen by the root finder
 		{
 			const int N = 100;
-			float dx = 1.0f / N;
-			float xs[N + 1];
-			float fs[N + 1];
+			b2Float dx = 1.0f / N;
+			b2Float xs[N + 1];
+			b2Float fs[N + 1];
 
-			float x = 0.0f;
+			b2Float x = 0.0f;
 
 			for (int i = 0; i <= N; ++i)
 			{
 				sweepA.GetTransform(&xfA, x);
 				sweepB.GetTransform(&xfB, x);
-				float f = fcn.Evaluate(xfA, xfB) - target;
+				b2Float f = fcn.Evaluate(xfA, xfB) - target;
 
 				printf("%g %g\n", x, f);
 
@@ -1114,13 +1115,13 @@ b2TOIOutput b2TimeOfImpact( const b2TOIInput* input )
 		// Compute the TOI on the separating axis. We do this by successively
 		// resolving the deepest point. This loop is bounded by the number of vertices.
 		bool done = false;
-		float t2 = tMax;
+		b2Float t2 = tMax;
 		int pushBackIterations = 0;
 		for ( ;; )
 		{
 			// Find the deepest point at t2. Store the witness point indices.
 			int indexA, indexB;
-			float s2 = b2FindMinSeparation( &fcn, &indexA, &indexB, t2 );
+			b2Float s2 = b2FindMinSeparation( &fcn, &indexA, &indexB, t2 );
 
 			// Is the final configuration separated?
 			if ( s2 > target + tolerance )
@@ -1144,7 +1145,7 @@ b2TOIOutput b2TimeOfImpact( const b2TOIInput* input )
 			}
 
 			// Compute the initial separation of the witness points.
-			float s1 = b2EvaluateSeparation( &fcn, indexA, indexB, t1 );
+			b2Float s1 = b2EvaluateSeparation( &fcn, indexA, indexB, t1 );
 
 			// Check for initial overlap. This might happen if the root finder
 			// runs out of iterations.
@@ -1174,11 +1175,11 @@ b2TOIOutput b2TimeOfImpact( const b2TOIInput* input )
 
 			// Compute 1D root of: f(x) - target = 0
 			int rootIterationCount = 0;
-			float a1 = t1, a2 = t2;
+			b2Float a1 = t1, a2 = t2;
 			for ( ;; )
 			{
 				// Use a mix of the secant rule and bisection.
-				float t;
+				b2Float t;
 				if ( rootIterationCount & 1 )
 				{
 					// Secant rule to improve convergence.
@@ -1196,7 +1197,7 @@ b2TOIOutput b2TimeOfImpact( const b2TOIInput* input )
 				++b2_toiRootIterations;
 #endif
 
-				float s = b2EvaluateSeparation( &fcn, indexA, indexB, t );
+				b2Float s = b2EvaluateSeparation( &fcn, indexA, indexB, t );
 
 				if ( b2AbsFloat( s - target ) < tolerance )
 				{
@@ -1255,7 +1256,7 @@ b2TOIOutput b2TimeOfImpact( const b2TOIInput* input )
 #if B2_SNOOP_TOI_COUNTERS
 	b2_toiMaxDistanceIterations = b2MaxInt( b2_toiMaxDistanceIterations, distanceIterations );
 
-	float time = b2GetMilliseconds( ticks );
+	b2Float time = b2GetMilliseconds( ticks );
 	b2_toiMaxTime = b2MaxFloat( b2_toiMaxTime, time );
 	b2_toiTime += time;
 #endif

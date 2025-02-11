@@ -15,7 +15,6 @@
 #include "box2d/collision.h"
 
 #include <float.h>
-#include <math.h>
 #include <stddef.h>
 
 B2_ARRAY_SOURCE( b2Contact, b2Contact );
@@ -496,9 +495,9 @@ bool b2UpdateContact( b2World* world, b2ContactSim* contactSim, b2Shape* shapeA,
 	// todo branch improves perf?
 	if (shapeA->rollingResistance > 0.0f || shapeB->rollingResistance > 0.0f)
 	{
-		float radiusA = b2GetShapeRadius( shapeA );
-		float radiusB = b2GetShapeRadius( shapeB );
-		float maxRadius = b2MaxFloat( radiusA, radiusB );
+		b2Float radiusA = b2GetShapeRadius( shapeA );
+		b2Float radiusB = b2GetShapeRadius( shapeB );
+		b2Float maxRadius = b2MaxFloat( radiusA, radiusB );
 		contactSim->rollingResistance = b2MaxFloat( shapeA->rollingResistance, shapeB->rollingResistance ) * maxRadius;
 	}
 	else
@@ -602,8 +601,8 @@ bool b2UpdateContact( b2World* world, b2ContactSim* contactSim, b2Shape* shapeA,
 		// If there are unmatched new contact points, apply any left over old impulse.
 		if (unmatchedCount > 0)
 		{
-			float unmatchedNormalImpulse = 0.0f;
-			float unmatchedTangentImpulse = 0.0f;
+			b2Float unmatchedNormalImpulse = 0.0f;
+			b2Float unmatchedTangentImpulse = 0.0f;
 			for (int i = 0; i < oldManifold.pointCount; ++i)
 			{
 				b2ManifoldPoint* mp = oldManifold.points + i;
@@ -611,7 +610,7 @@ bool b2UpdateContact( b2World* world, b2ContactSim* contactSim, b2Shape* shapeA,
 				unmatchedTangentImpulse += mp->tangentImpulse;
 			}
 
-			float inverse = 1.0f / unmatchedCount;
+			b2Float inverse = 1.0f / unmatchedCount;
 			unmatchedNormalImpulse *= inverse;
 			unmatchedTangentImpulse *= inverse;
 

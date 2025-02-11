@@ -18,11 +18,11 @@ typedef struct b2Shape
 	int nextShapeId;
 	int sensorIndex;
 	b2ShapeType type;
-	float density;
-	float friction;
-	float restitution;
-	float rollingResistance;
-	float tangentSpeed;
+	b2Float density;
+	b2Float friction;
+	b2Float restitution;
+	b2Float rollingResistance;
+	b2Float tangentSpeed;
 	int material;
 
 	b2AABB aabb;
@@ -64,8 +64,8 @@ typedef struct b2ChainShape
 
 typedef struct b2ShapeExtent
 {
-	float minExtent;
-	float maxExtent;
+	b2Float minExtent;
+	b2Float maxExtent;
 } b2ShapeExtent;
 
 // Sensors are shapes that live in the broad-phase but never have contacts.
@@ -89,15 +89,15 @@ b2MassData b2ComputeShapeMass( const b2Shape* shape );
 b2ShapeExtent b2ComputeShapeExtent( const b2Shape* shape, b2Vec2 localCenter );
 b2AABB b2ComputeShapeAABB( const b2Shape* shape, b2Transform transform );
 b2Vec2 b2GetShapeCentroid( const b2Shape* shape );
-float b2GetShapePerimeter( const b2Shape* shape );
-float b2GetShapeProjectedPerimeter( const b2Shape* shape, b2Vec2 line );
+b2Float b2GetShapePerimeter( const b2Shape* shape );
+b2Float b2GetShapeProjectedPerimeter( const b2Shape* shape, b2Vec2 line );
 
 b2ShapeProxy b2MakeShapeDistanceProxy( const b2Shape* shape );
 
 b2CastOutput b2RayCastShape( const b2RayCastInput* input, const b2Shape* shape, b2Transform transform );
 b2CastOutput b2ShapeCastShape( const b2ShapeCastInput* input, const b2Shape* shape, b2Transform transform );
 
-static inline float b2GetShapeRadius(const b2Shape* shape)
+static inline b2Float b2GetShapeRadius(const b2Shape* shape)
 {
 	switch ( shape->type )
 	{

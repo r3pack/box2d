@@ -4,6 +4,7 @@
 #include "constants.h"
 #include "core.h"
 
+#include "box2d/base.h"
 #include "box2d/collision.h"
 #include "box2d/math_functions.h"
 
@@ -28,7 +29,7 @@ static b2Hull b2RecurseHull( b2Vec2 p1, b2Vec2 p2, b2Vec2* ps, int count )
 	int rightCount = 0;
 
 	int bestIndex = 0;
-	float bestDistance = b2Cross( b2Sub( ps[bestIndex], p1 ), e );
+	b2Float bestDistance = b2Cross( b2Sub( ps[bestIndex], p1 ), e );
 	if ( bestDistance > 0.0f )
 	{
 		rightPoints[rightCount++] = ps[bestIndex];
@@ -36,7 +37,7 @@ static b2Hull b2RecurseHull( b2Vec2 p1, b2Vec2 p2, b2Vec2* ps, int count )
 
 	for ( int i = 1; i < count; ++i )
 	{
-		float distance = b2Cross( b2Sub( ps[i], p1 ), e );
+		b2Float distance = b2Cross( b2Sub( ps[i], p1 ), e );
 		if ( distance > bestDistance )
 		{
 			bestIndex = i;
@@ -103,8 +104,8 @@ b2Hull b2ComputeHull( const b2Vec2* points, int count )
 	// Also compute the bounding box for later.
 	b2Vec2 ps[B2_MAX_POLYGON_VERTICES];
 	int n = 0;
-	const float linearSlop = B2_LINEAR_SLOP;
-	const float tolSqr = 16.0f * linearSlop * linearSlop;
+	const b2Float linearSlop = B2_LINEAR_SLOP;
+	const b2Float tolSqr = 16.0f * linearSlop * linearSlop;
 	for ( int i = 0; i < count; ++i )
 	{
 		aabb.lowerBound = b2Min( aabb.lowerBound, points[i] );
@@ -117,7 +118,7 @@ b2Hull b2ComputeHull( const b2Vec2* points, int count )
 		{
 			b2Vec2 vj = points[j];
 
-			float distSqr = b2DistanceSquared( vi, vj );
+			b2Float distSqr = b2DistanceSquared( vi, vj );
 			if ( distSqr < tolSqr )
 			{
 				unique = false;
@@ -140,10 +141,10 @@ b2Hull b2ComputeHull( const b2Vec2* points, int count )
 	// Find an extreme point as the first point on the hull
 	b2Vec2 c = b2AABB_Center( aabb );
 	int f1 = 0;
-	float dsq1 = b2DistanceSquared( c, ps[f1] );
+	b2Float dsq1 = b2DistanceSquared( c, ps[f1] );
 	for ( int i = 1; i < n; ++i )
 	{
-		float dsq = b2DistanceSquared( c, ps[i] );
+		b2Float dsq = b2DistanceSquared( c, ps[i] );
 		if ( dsq > dsq1 )
 		{
 			f1 = i;
@@ -157,10 +158,10 @@ b2Hull b2ComputeHull( const b2Vec2* points, int count )
 	n = n - 1;
 
 	int f2 = 0;
-	float dsq2 = b2DistanceSquared( p1, ps[f2] );
+	b2Float dsq2 = b2DistanceSquared( p1, ps[f2] );
 	for ( int i = 1; i < n; ++i )
 	{
-		float dsq = b2DistanceSquared( p1, ps[i] );
+		b2Float dsq = b2DistanceSquared( p1, ps[i] );
 		if ( dsq > dsq2 )
 		{
 			f2 = i;
@@ -184,7 +185,7 @@ b2Hull b2ComputeHull( const b2Vec2* points, int count )
 
 	for ( int i = 0; i < n; ++i )
 	{
-		float d = b2Cross( b2Sub( ps[i], p1 ), e );
+		b2Float d = b2Cross( b2Sub( ps[i], p1 ), e );
 
 		// slop used here to skip points that are very close to the line p1-p2
 		if ( d >= 2.0f * linearSlop )
@@ -243,7 +244,7 @@ b2Hull b2ComputeHull( const b2Vec2* points, int count )
 			// unit edge vector for s1-s3
 			b2Vec2 r = b2Normalize( b2Sub( s3, s1 ) );
 
-			float distance = b2Cross( b2Sub( s2, s1 ), r );
+			b2Float distance = b2Cross( b2Sub( s2, s1 ), r );
 			if ( distance <= 2.0f * linearSlop )
 			{
 				// remove midpoint from hull
@@ -294,7 +295,7 @@ bool b2ValidateHull( const b2Hull* hull )
 				continue;
 			}
 
-			float distance = b2Cross( b2Sub( hull->points[j], p ), e );
+			b2Float distance = b2Cross( b2Sub( hull->points[j], p ), e );
 			if ( distance >= 0.0f )
 			{
 				return false;
@@ -303,7 +304,7 @@ bool b2ValidateHull( const b2Hull* hull )
 	}
 
 	// test for collinear points
-	const float linearSlop = B2_LINEAR_SLOP;
+	const b2Float linearSlop = B2_LINEAR_SLOP;
 	for ( int i = 0; i < hull->count; ++i )
 	{
 		int i1 = i;
@@ -316,7 +317,7 @@ bool b2ValidateHull( const b2Hull* hull )
 
 		b2Vec2 e = b2Normalize( b2Sub( p3, p1 ) );
 
-		float distance = b2Cross( b2Sub( p2, p1 ), e );
+		b2Float distance = b2Cross( b2Sub( p2, p1 ), e );
 		if ( distance <= linearSlop )
 		{
 			// p1-p2-p3 are collinear

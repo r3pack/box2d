@@ -34,7 +34,7 @@ typedef struct b2TaskContext
 	b2BitSet awakeIslandBitSet;
 
 	// Per worker split island candidate
-	float splitSleepTime;
+	b2Float splitSleepTime;
 	int splitIslandId;
 
 } b2TaskContext;
@@ -128,14 +128,14 @@ typedef struct b2World
 	int splitIslandId;
 
 	b2Vec2 gravity;
-	float hitEventThreshold;
-	float restitutionThreshold;
-	float maxLinearSpeed;
-	float contactMaxPushSpeed;
-	float contactHertz;
-	float contactDampingRatio;
-	float jointHertz;
-	float jointDampingRatio;
+	b2Float hitEventThreshold;
+	b2Float restitutionThreshold;
+	b2Float maxLinearSpeed;
+	b2Float contactMaxPushSpeed;
+	b2Float contactHertz;
+	b2Float contactDampingRatio;
+	b2Float jointHertz;
+	b2Float jointDampingRatio;
 
 	b2FrictionCallback* frictionCallback;
 	b2RestitutionCallback* restitutionCallback;
@@ -159,7 +159,7 @@ typedef struct b2World
 	void* userData;
 
 	// Remember type step used for reporting forces and torques
-	float inv_h;
+	b2Float inv_h;
 
 	int activeTaskCount;
 	int taskCount;

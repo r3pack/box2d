@@ -33,7 +33,7 @@ typedef struct b2RayCastInput
 	b2Vec2 translation;
 
 	/// The maximum fraction of the translation to consider, typically 1
-	float maxFraction;
+	b2Float maxFraction;
 } b2RayCastInput;
 
 /// Low level shape cast input in generic form. This allows casting an arbitrary point
@@ -48,13 +48,13 @@ typedef struct b2ShapeCastInput
 	int count;
 
 	/// The radius around the point cloud
-	float radius;
+	b2Float radius;
 
 	/// The translation of the shape cast
 	b2Vec2 translation;
 
 	/// The maximum fraction of the translation to consider, typically 1
-	float maxFraction;
+	b2Float maxFraction;
 } b2ShapeCastInput;
 
 /// Low level ray cast or shape-cast output data
@@ -67,7 +67,7 @@ typedef struct b2CastOutput
 	b2Vec2 point;
 
 	/// The fraction of the input translation at collision
-	float fraction;
+	b2Float fraction;
 
 	/// The number of iterations used
 	int iterations;
@@ -80,13 +80,13 @@ typedef struct b2CastOutput
 typedef struct b2MassData
 {
 	/// The mass of the shape, usually in kilograms.
-	float mass;
+	b2Float mass;
 
 	/// The position of the shape's centroid relative to the shape's origin.
 	b2Vec2 center;
 
 	/// The rotational inertia of the shape about the local origin.
-	float rotationalInertia;
+	b2Float rotationalInertia;
 } b2MassData;
 
 /// A solid circle
@@ -96,7 +96,7 @@ typedef struct b2Circle
 	b2Vec2 center;
 
 	/// The radius
-	float radius;
+	b2Float radius;
 } b2Circle;
 
 /// A solid capsule can be viewed as two semicircles connected
@@ -110,7 +110,7 @@ typedef struct b2Capsule
 	b2Vec2 center2;
 
 	/// The radius of the semicircles
-	float radius;
+	b2Float radius;
 } b2Capsule;
 
 /// A solid convex polygon. It is assumed that the interior of the polygon is to
@@ -131,7 +131,7 @@ typedef struct b2Polygon
 	b2Vec2 centroid;
 
 	/// The external radius for rounded polygons
-	float radius;
+	b2Float radius;
 
 	/// The number of polygon vertices
 	int count;
@@ -170,7 +170,7 @@ B2_API bool b2IsValidRay( const b2RayCastInput* input );
 
 /// Make a convex polygon from a convex hull. This will assert if the hull is not valid.
 /// @warning Do not manually fill in the hull data, it must come directly from b2ComputeHull
-B2_API b2Polygon b2MakePolygon( const b2Hull* hull, float radius );
+B2_API b2Polygon b2MakePolygon( const b2Hull* hull, b2Float radius );
 
 /// Make an offset convex polygon from a convex hull. This will assert if the hull is not valid.
 /// @warning Do not manually fill in the hull data, it must come directly from b2ComputeHull
@@ -178,29 +178,29 @@ B2_API b2Polygon b2MakeOffsetPolygon( const b2Hull* hull, b2Vec2 position, b2Rot
 
 /// Make an offset convex polygon from a convex hull. This will assert if the hull is not valid.
 /// @warning Do not manually fill in the hull data, it must come directly from b2ComputeHull
-B2_API b2Polygon b2MakeOffsetRoundedPolygon( const b2Hull* hull, b2Vec2 position, b2Rot rotation, float radius );
+B2_API b2Polygon b2MakeOffsetRoundedPolygon( const b2Hull* hull, b2Vec2 position, b2Rot rotation, b2Float radius );
 
 /// Make a square polygon, bypassing the need for a convex hull.
 /// @param halfWidth the half-width
-B2_API b2Polygon b2MakeSquare( float halfWidth );
+B2_API b2Polygon b2MakeSquare( b2Float halfWidth );
 
 /// Make a box (rectangle) polygon, bypassing the need for a convex hull.
 /// @param halfWidth the half-width (x-axis)
 /// @param halfHeight the half-height (y-axis)
-B2_API b2Polygon b2MakeBox( float halfWidth, float halfHeight );
+B2_API b2Polygon b2MakeBox( b2Float halfWidth, b2Float halfHeight );
 
 /// Make a rounded box, bypassing the need for a convex hull.
 /// @param halfWidth the half-width (x-axis)
 /// @param halfHeight the half-height (y-axis)
 /// @param radius the radius of the rounded extension
-B2_API b2Polygon b2MakeRoundedBox( float halfWidth, float halfHeight, float radius );
+B2_API b2Polygon b2MakeRoundedBox( b2Float halfWidth, b2Float halfHeight, b2Float radius );
 
 /// Make an offset box, bypassing the need for a convex hull.
 /// @param halfWidth the half-width (x-axis)
 /// @param halfHeight the half-height (y-axis)
 /// @param center the local center of the box
 /// @param rotation the local rotation of the box
-B2_API b2Polygon b2MakeOffsetBox( float halfWidth, float halfHeight, b2Vec2 center, b2Rot rotation );
+B2_API b2Polygon b2MakeOffsetBox( b2Float halfWidth, b2Float halfHeight, b2Vec2 center, b2Rot rotation );
 
 /// Make an offset rounded box, bypassing the need for a convex hull.
 /// @param halfWidth the half-width (x-axis)
@@ -208,19 +208,19 @@ B2_API b2Polygon b2MakeOffsetBox( float halfWidth, float halfHeight, b2Vec2 cent
 /// @param center the local center of the box
 /// @param rotation the local rotation of the box
 /// @param radius the radius of the rounded extension
-B2_API b2Polygon b2MakeOffsetRoundedBox( float halfWidth, float halfHeight, b2Vec2 center, b2Rot rotation, float radius );
+B2_API b2Polygon b2MakeOffsetRoundedBox( b2Float halfWidth, b2Float halfHeight, b2Vec2 center, b2Rot rotation, b2Float radius );
 
 /// Transform a polygon. This is useful for transferring a shape from one body to another.
 B2_API b2Polygon b2TransformPolygon( b2Transform transform, const b2Polygon* polygon );
 
 /// Compute mass properties of a circle
-B2_API b2MassData b2ComputeCircleMass( const b2Circle* shape, float density );
+B2_API b2MassData b2ComputeCircleMass( const b2Circle* shape, b2Float density );
 
 /// Compute mass properties of a capsule
-B2_API b2MassData b2ComputeCapsuleMass( const b2Capsule* shape, float density );
+B2_API b2MassData b2ComputeCapsuleMass( const b2Capsule* shape, b2Float density );
 
 /// Compute mass properties of a polygon
-B2_API b2MassData b2ComputePolygonMass( const b2Polygon* shape, float density );
+B2_API b2MassData b2ComputePolygonMass( const b2Polygon* shape, b2Float density );
 
 /// Compute the bounding box of a transformed circle
 B2_API b2AABB b2ComputeCircleAABB( const b2Circle* shape, b2Transform transform );
@@ -317,13 +317,13 @@ typedef struct b2SegmentDistanceResult
 	b2Vec2 closest2;
 
 	/// The barycentric coordinate on the first segment
-	float fraction1;
+	b2Float fraction1;
 
 	/// The barycentric coordinate on the second segment
-	float fraction2;
+	b2Float fraction2;
 
 	/// The squared distance between the closest points
-	float distanceSquared;
+	b2Float distanceSquared;
 } b2SegmentDistanceResult;
 
 /// Compute the distance between two line segments, clamping at the end points if needed.
@@ -339,7 +339,7 @@ typedef struct b2ShapeProxy
 	int count;
 
 	/// The external radius of the point cloud
-	float radius;
+	b2Float radius;
 } b2ShapeProxy;
 
 /// Used to warm start the GJK simplex. If you call this function multiple times with nearby
@@ -386,7 +386,7 @@ typedef struct b2DistanceOutput
 	b2Vec2 pointB; ///< Closest point on shapeB
 	// todo_erin implement this
 	// b2Vec2 normal;			///< Normal vector that points from A to B
-	float distance;		  ///< The final distance, zero if overlapped
+	b2Float distance;		  ///< The final distance, zero if overlapped
 	int iterations;	  ///< Number of GJK iterations used
 	int simplexCount; ///< The number of simplexes stored in the simplex array
 } b2DistanceOutput;
@@ -397,7 +397,7 @@ typedef struct b2SimplexVertex
 	b2Vec2 wA;		///< support point in proxyA
 	b2Vec2 wB;		///< support point in proxyB
 	b2Vec2 w;		///< wB - wA
-	float a;		///< barycentric coordinate for closest point
+	b2Float a;		///< barycentric coordinate for closest point
 	int indexA; ///< wA index
 	int indexB; ///< wB index
 } b2SimplexVertex;
@@ -423,14 +423,14 @@ typedef struct b2ShapeCastPairInput
 	b2Transform transformA; ///< The world transform for shape A
 	b2Transform transformB; ///< The world transform for shape B
 	b2Vec2 translationB;	///< The translation of shape B
-	float maxFraction;		///< The fraction of the translation to consider, typically 1
+	b2Float maxFraction;		///< The fraction of the translation to consider, typically 1
 } b2ShapeCastPairInput;
 
 /// Perform a linear shape cast of shape B moving and shape A fixed. Determines the hit point, normal, and translation fraction.
 B2_API b2CastOutput b2ShapeCast( const b2ShapeCastPairInput* input );
 
 /// Make a proxy for use in GJK and related functions.
-B2_API b2ShapeProxy b2MakeProxy( const b2Vec2* vertices, int count, float radius );
+B2_API b2ShapeProxy b2MakeProxy( const b2Vec2* vertices, int count, b2Float radius );
 
 /// This describes the motion of a body/shape for TOI computation. Shapes are defined with respect to the body origin,
 /// which may not coincide with the center of mass. However, to support dynamics we must interpolate the center of mass
@@ -445,7 +445,7 @@ typedef struct b2Sweep
 } b2Sweep;
 
 /// Evaluate the transform sweep at a specific time.
-B2_API b2Transform b2GetSweepTransform( const b2Sweep* sweep, float time );
+B2_API b2Transform b2GetSweepTransform( const b2Sweep* sweep, b2Float time );
 
 /// Input parameters for b2TimeOfImpact
 typedef struct b2TOIInput
@@ -454,7 +454,7 @@ typedef struct b2TOIInput
 	b2ShapeProxy proxyB; ///< The proxy for shape B
 	b2Sweep sweepA;		 ///< The movement of shape A
 	b2Sweep sweepB;		 ///< The movement of shape B
-	float maxFraction;	 ///< Defines the sweep interval [0, maxFraction]
+	b2Float maxFraction;	 ///< Defines the sweep interval [0, maxFraction]
 } b2TOIInput;
 
 /// Describes the TOI output
@@ -471,7 +471,7 @@ typedef enum b2TOIState
 typedef struct b2TOIOutput
 {
 	b2TOIState state; ///< The type of result
-	float fraction;	  ///< The sweep time of the collision
+	b2Float fraction;	  ///< The sweep time of the collision
 } b2TOIOutput;
 
 /// Compute the upper bound on time before two shapes penetrate. Time is represented as
@@ -508,21 +508,21 @@ typedef struct b2ManifoldPoint
 	b2Vec2 anchorB;
 
 	/// The separation of the contact point, negative if penetrating
-	float separation;
+	b2Float separation;
 
 	/// The impulse along the manifold normal vector.
-	float normalImpulse;
+	b2Float normalImpulse;
 
 	/// The friction impulse
-	float tangentImpulse;
+	b2Float tangentImpulse;
 
 	/// The maximum normal impulse applied during sub-stepping. This is important
 	/// to identify speculative contact points that had an interaction in the time step.
-	float maxNormalImpulse;
+	b2Float maxNormalImpulse;
 
 	/// Relative normal velocity pre-solve. Used for hit events. If the normal impulse is
 	/// zero then there was no hit. Negative means shapes are approaching.
-	float normalVelocity;
+	b2Float normalVelocity;
 
 	/// Uniquely identifies a contact point between two shapes
 	uint16_t id;
@@ -539,7 +539,7 @@ typedef struct b2Manifold
 	b2Vec2 normal;
 
 	/// Angular impulse applied for rolling resistance. N * m * s = kg * m^2 / s
-	float rollingImpulse;
+	b2Float rollingImpulse;
 
 	/// The manifold points, up to two are possible in 2D
 	b2ManifoldPoint points[2];
@@ -694,7 +694,7 @@ B2_API b2TreeStats b2DynamicTree_Query( const b2DynamicTree* tree, b2AABB aabb, 
 /// - return a value of 0 to terminate the ray cast
 /// - return a value less than input->maxFraction to clip the ray
 /// - return a value of input->maxFraction to continue the ray cast without clipping
-typedef float b2TreeRayCastCallbackFcn( const b2RayCastInput* input, int proxyId, int userData, void* context );
+typedef b2Float b2TreeRayCastCallbackFcn( const b2RayCastInput* input, int proxyId, int userData, void* context );
 
 /// Ray cast against the proxies in the tree. This relies on the callback
 /// to perform a exact ray cast in the case were the proxy contains a shape.
@@ -717,7 +717,7 @@ B2_API b2TreeStats b2DynamicTree_RayCast( const b2DynamicTree* tree, const b2Ray
 /// - return a value of 0 to terminate the ray cast
 /// - return a value less than input->maxFraction to clip the ray
 /// - return a value of input->maxFraction to continue the ray cast without clipping
-typedef float b2TreeShapeCastCallbackFcn( const b2ShapeCastInput* input, int proxyId, int userData, void* context );
+typedef b2Float b2TreeShapeCastCallbackFcn( const b2ShapeCastInput* input, int proxyId, int userData, void* context );
 
 /// Ray cast against the proxies in the tree. This relies on the callback
 /// to perform a exact ray cast in the case were the proxy contains a shape.
@@ -737,7 +737,7 @@ B2_API b2TreeStats b2DynamicTree_ShapeCast( const b2DynamicTree* tree, const b2S
 B2_API int b2DynamicTree_GetHeight( const b2DynamicTree* tree );
 
 /// Get the ratio of the sum of the node areas to the root area.
-B2_API float b2DynamicTree_GetAreaRatio( const b2DynamicTree* tree );
+B2_API b2Float b2DynamicTree_GetAreaRatio( const b2DynamicTree* tree );
 
 /// Get the number of proxies created
 B2_API int b2DynamicTree_GetProxyCount( const b2DynamicTree* tree );

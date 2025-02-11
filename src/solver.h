@@ -18,9 +18,9 @@ typedef struct b2World b2World;
 
 typedef struct b2Softness
 {
-	float biasRate;
-	float massScale;
-	float impulseScale;
+	b2Float biasRate;
+	b2Float massScale;
+	b2Float impulseScale;
 } b2Softness;
 
 typedef enum b2SolverStageType
@@ -75,14 +75,14 @@ typedef struct b2SolverStage
 typedef struct b2StepContext
 {
 	// time step
-	float dt;
+	b2Float dt;
 
 	// inverse time step (0 if dt == 0).
-	float inv_dt;
+	b2Float inv_dt;
 
 	// sub-step
-	float h;
-	float inv_h;
+	b2Float h;
+	b2Float inv_h;
 
 	int subStepCount;
 
@@ -90,8 +90,8 @@ typedef struct b2StepContext
 	b2Softness contactSoftness;
 	b2Softness staticSoftness;
 
-	float restitutionThreshold;
-	float maxLinearVelocity;
+	b2Float restitutionThreshold;
+	b2Float maxLinearVelocity;
 
 	struct b2World* world;
 	struct b2ConstraintGraph* graph;
@@ -138,17 +138,17 @@ typedef struct b2StepContext
 
 } b2StepContext;
 
-static inline b2Softness b2MakeSoft( float hertz, float zeta, float h )
+static inline b2Softness b2MakeSoft( b2Float hertz, b2Float zeta, b2Float h )
 {
 	if ( hertz == 0.0f )
 	{
 		return ( b2Softness ){ 0.0f, 1.0f, 0.0f };
 	}
 
-	float omega = 2.0f * B2_PI * hertz;
-	float a1 = 2.0f * zeta + h * omega;
-	float a2 = h * omega * a1;
-	float a3 = 1.0f / ( 1.0f + a2 );
+	b2Float omega = 2.0f * B2_PI * hertz;
+	b2Float a1 = 2.0f * zeta + h * omega;
+	b2Float a2 = h * omega * a1;
+	b2Float a3 = 1.0f / ( 1.0f + a2 );
 	return ( b2Softness ){ omega / a1, a2 * a3, a3 };
 }
 

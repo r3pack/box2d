@@ -9,10 +9,10 @@
 b2CastOutput b2AABB_RayCast( b2AABB a, b2Vec2 p1, b2Vec2 p2 );
 
 // Get surface area of an AABB (the perimeter length)
-static inline float b2Perimeter( b2AABB a )
+static inline b2Float b2Perimeter( b2AABB a )
 {
-	float wx = a.upperBound.x - a.lowerBound.x;
-	float wy = a.upperBound.y - a.lowerBound.y;
+	b2Float wx = a.upperBound.x - a.lowerBound.x;
+	b2Float wy = a.upperBound.y - a.lowerBound.y;
 	return 2.0f * ( wx + wy );
 }
 

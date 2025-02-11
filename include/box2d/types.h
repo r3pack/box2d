@@ -52,12 +52,12 @@ typedef void b2FinishTaskCallback( void* userTask, void* userContext );
 /// Optional friction mixing callback. This intentionally provides no context objects because this is called
 /// from a worker thread.
 /// @warning This function should not attempt to modify Box2D state or user application state.
-typedef float b2FrictionCallback( float frictionA, int materialA, float frictionB, int materialB );
+typedef b2Float b2FrictionCallback( b2Float frictionA, int materialA, b2Float frictionB, int materialB );
 
 /// Optional restitution mixing callback. This intentionally provides no context objects because this is called
 /// from a worker thread.
 /// @warning This function should not attempt to modify Box2D state or user application state.
-typedef float b2RestitutionCallback( float restitutionA, int materialA, float restitutionB, int materialB );
+typedef b2Float b2RestitutionCallback( b2Float restitutionA, int materialA, b2Float restitutionB, int materialB );
 
 /// Result from b2World_RayCastClosest
 /// @ingroup world
@@ -66,7 +66,7 @@ typedef struct b2RayResult
 	b2ShapeId shapeId;
 	b2Vec2 point;
 	b2Vec2 normal;
-	float fraction;
+	b2Float fraction;
 	int nodeVisits;
 	int leafVisits;
 	bool hit;
@@ -82,31 +82,31 @@ typedef struct b2WorldDef
 
 	/// Restitution speed threshold, usually in m/s. Collisions above this
 	/// speed have restitution applied (will bounce).
-	float restitutionThreshold;
+	b2Float restitutionThreshold;
 
 	/// Threshold speed for hit events. Usually meters per second.
-	float hitEventThreshold;
+	b2Float hitEventThreshold;
 
 	/// Contact stiffness. Cycles per second. Increasing this increases the speed of overlap recovery, but can introduce jitter.
-	float contactHertz;
+	b2Float contactHertz;
 
 	/// Contact bounciness. Non-dimensional. You can speed up overlap recovery by decreasing this with
 	/// the trade-off that overlap resolution becomes more energetic.
-	float contactDampingRatio;
+	b2Float contactDampingRatio;
 
 	/// This parameter controls how fast overlap is resolved and usually has units of meters per second. This only
 	/// puts a cap on the resolution speed. The resolution speed is increased by increasing the hertz and/or
 	/// decreasing the damping ratio.
-	float contactPushMaxSpeed;
+	b2Float contactPushMaxSpeed;
 
 	/// Joint stiffness. Cycles per second.
-	float jointHertz;
+	b2Float jointHertz;
 
 	/// Joint bounciness. Non-dimensional.
-	float jointDampingRatio;
+	b2Float jointDampingRatio;
 
 	/// Maximum linear speed. Usually meters per second.
-	float maximumLinearSpeed;
+	b2Float maximumLinearSpeed;
 
 	/// Optional mixing callback for friction. The default uses sqrt(frictionA * frictionB).
 	b2FrictionCallback* frictionCallback;
@@ -189,26 +189,26 @@ typedef struct b2BodyDef
 	b2Vec2 linearVelocity;
 
 	/// The initial angular velocity of the body. Radians per second.
-	float angularVelocity;
+	b2Float angularVelocity;
 
 	/// Linear damping is used to reduce the linear velocity. The damping parameter
 	/// can be larger than 1 but the damping effect becomes sensitive to the
 	/// time step when the damping parameter is large.
 	/// Generally linear damping is undesirable because it makes objects move slowly
 	/// as if they are floating.
-	float linearDamping;
+	b2Float linearDamping;
 
 	/// Angular damping is used to reduce the angular velocity. The damping parameter
 	/// can be larger than 1.0f but the damping effect becomes sensitive to the
 	/// time step when the damping parameter is large.
 	/// Angular damping can be use slow down rotating bodies.
-	float angularDamping;
+	b2Float angularDamping;
 
 	/// Scale the gravity applied to this body. Non-dimensional.
-	float gravityScale;
+	b2Float gravityScale;
 
 	/// Sleep speed threshold, default is 0.05 meters per second
-	float sleepThreshold;
+	b2Float sleepThreshold;
 
 	/// Optional body name for debugging. Up to 31 characters (excluding null termination)
 	const char* name;
@@ -339,24 +339,24 @@ typedef struct b2ShapeDef
 	void* userData;
 
 	/// The Coulomb (dry) friction coefficient, usually in the range [0,1].
-	float friction;
+	b2Float friction;
 
 	/// The coefficient of restitution (bounce) usually in the range [0,1].
 	/// https://en.wikipedia.org/wiki/Coefficient_of_restitution
-	float restitution;
+	b2Float restitution;
 
 	/// The rolling resistance usually in the range [0,1].
-	float rollingResistance;
+	b2Float rollingResistance;
 
 	/// The tangent speed for conveyor belts
-	float tangentSpeed;
+	b2Float tangentSpeed;
 
 	/// User material identifier. This is passed with query results and to friction and restitution
 	/// combining functions. It is not used internally.
 	int material;
 
 	/// The density, usually in kg/m^2.
-	float density;
+	b2Float density;
 
 	/// Collision filtering data.
 	b2Filter filter;
@@ -401,17 +401,17 @@ B2_API b2ShapeDef b2DefaultShapeDef( void );
 typedef struct b2SurfaceMaterial
 {
 	/// The Coulomb (dry) friction coefficient, usually in the range [0,1].
-	float friction;
+	b2Float friction;
 
 	/// The coefficient of restitution (bounce) usually in the range [0,1].
 	/// https://en.wikipedia.org/wiki/Coefficient_of_restitution
-	float restitution;
+	b2Float restitution;
 
 	/// The rolling resistance usually in the range [0,1].
-	float rollingResistance;
+	b2Float rollingResistance;
 
 	/// The tangent speed for conveyor belts
-	float tangentSpeed;
+	b2Float tangentSpeed;
 
 	/// User material identifier. This is passed with query results and to friction and restitution
 	/// combining functions. It is not used internally.
@@ -476,28 +476,28 @@ B2_API b2ChainDef b2DefaultChainDef( void );
 /// Profiling data. Times are in milliseconds.
 typedef struct b2Profile
 {
-	float step;
-	float pairs;
-	float collide;
-	float solve;
-	float mergeIslands;
-	float prepareStages;
-	float solveConstraints;
-	float prepareConstraints;
-	float integrateVelocities;
-	float warmStart;
-	float solveImpulses;
-	float integratePositions;
-	float relaxImpulses;
-	float applyRestitution;
-	float storeImpulses;
-	float splitIslands;
-	float transforms;
-	float hitEvents;
-	float refit;
-	float bullets;
-	float sleepIslands;
-	float sensors;
+	b2Float step;
+	b2Float pairs;
+	b2Float collide;
+	b2Float solve;
+	b2Float mergeIslands;
+	b2Float prepareStages;
+	b2Float solveConstraints;
+	b2Float prepareConstraints;
+	b2Float integrateVelocities;
+	b2Float warmStart;
+	b2Float solveImpulses;
+	b2Float integratePositions;
+	b2Float relaxImpulses;
+	b2Float applyRestitution;
+	b2Float storeImpulses;
+	b2Float splitIslands;
+	b2Float transforms;
+	b2Float hitEvents;
+	b2Float refit;
+	b2Float bullets;
+	b2Float sleepIslands;
+	b2Float sensors;
 } b2Profile;
 
 /// Counters that give details of the simulation size.
@@ -556,35 +556,35 @@ typedef struct b2DistanceJointDef
 	b2Vec2 localAnchorB;
 
 	/// The rest length of this joint. Clamped to a stable minimum value.
-	float length;
+	b2Float length;
 
 	/// Enable the distance constraint to behave like a spring. If false
 	/// then the distance joint will be rigid, overriding the limit and motor.
 	bool enableSpring;
 
 	/// The spring linear stiffness Hertz, cycles per second
-	float hertz;
+	b2Float hertz;
 
 	/// The spring linear damping ratio, non-dimensional
-	float dampingRatio;
+	b2Float dampingRatio;
 
 	/// Enable/disable the joint limit
 	bool enableLimit;
 
 	/// Minimum length. Clamped to a stable minimum value.
-	float minLength;
+	b2Float minLength;
 
 	/// Maximum length. Must be greater than or equal to the minimum length.
-	float maxLength;
+	b2Float maxLength;
 
 	/// Enable/disable the joint motor
 	bool enableMotor;
 
 	/// The maximum motor force, usually in newtons
-	float maxMotorForce;
+	b2Float maxMotorForce;
 
 	/// The desired motor speed, usually in meters per second
-	float motorSpeed;
+	b2Float motorSpeed;
 
 	/// Set this flag to true if the attached bodies should collide
 	bool collideConnected;
@@ -616,16 +616,16 @@ typedef struct b2MotorJointDef
 	b2Vec2 linearOffset;
 
 	/// The bodyB angle minus bodyA angle in radians
-	float angularOffset;
+	b2Float angularOffset;
 
 	/// The maximum motor force in newtons
-	float maxForce;
+	b2Float maxForce;
 
 	/// The maximum motor torque in newton-meters
-	float maxTorque;
+	b2Float maxTorque;
 
 	/// Position correction factor in the range [0,1]
-	float correctionFactor;
+	b2Float correctionFactor;
 
 	/// Set this flag to true if the attached bodies should collide
 	bool collideConnected;
@@ -658,13 +658,13 @@ typedef struct b2MouseJointDef
 	b2Vec2 target;
 
 	/// Stiffness in hertz
-	float hertz;
+	b2Float hertz;
 
 	/// Damping ratio, non-dimensional
-	float dampingRatio;
+	b2Float dampingRatio;
 
 	/// Maximum force, typically in newtons
-	float maxForce;
+	b2Float maxForce;
 
 	/// Set this flag to true if the attached bodies should collide.
 	bool collideConnected;
@@ -727,34 +727,34 @@ typedef struct b2PrismaticJointDef
 	b2Vec2 localAxisA;
 
 	/// The constrained angle between the bodies: bodyB_angle - bodyA_angle
-	float referenceAngle;
+	b2Float referenceAngle;
 
 	/// Enable a linear spring along the prismatic joint axis
 	bool enableSpring;
 
 	/// The spring stiffness Hertz, cycles per second
-	float hertz;
+	b2Float hertz;
 
 	/// The spring damping ratio, non-dimensional
-	float dampingRatio;
+	b2Float dampingRatio;
 
 	/// Enable/disable the joint limit
 	bool enableLimit;
 
 	/// The lower translation limit
-	float lowerTranslation;
+	b2Float lowerTranslation;
 
 	/// The upper translation limit
-	float upperTranslation;
+	b2Float upperTranslation;
 
 	/// Enable/disable the joint motor
 	bool enableMotor;
 
 	/// The maximum motor force, typically in newtons
-	float maxMotorForce;
+	b2Float maxMotorForce;
 
 	/// The desired motor speed, typically in meters per second
-	float motorSpeed;
+	b2Float motorSpeed;
 
 	/// Set this flag to true if the attached bodies should collide
 	bool collideConnected;
@@ -798,37 +798,37 @@ typedef struct b2RevoluteJointDef
 
 	/// The bodyB angle minus bodyA angle in the reference state (radians).
 	/// This defines the zero angle for the joint limit.
-	float referenceAngle;
+	b2Float referenceAngle;
 
 	/// Enable a rotational spring on the revolute hinge axis
 	bool enableSpring;
 
 	/// The spring stiffness Hertz, cycles per second
-	float hertz;
+	b2Float hertz;
 
 	/// The spring damping ratio, non-dimensional
-	float dampingRatio;
+	b2Float dampingRatio;
 
 	/// A flag to enable joint limits
 	bool enableLimit;
 
 	/// The lower angle for the joint limit in radians
-	float lowerAngle;
+	b2Float lowerAngle;
 
 	/// The upper angle for the joint limit in radians
-	float upperAngle;
+	b2Float upperAngle;
 
 	/// A flag to enable the joint motor
 	bool enableMotor;
 
 	/// The maximum motor torque, typically in newton-meters
-	float maxMotorTorque;
+	b2Float maxMotorTorque;
 
 	/// The desired motor speed in radians per second
-	float motorSpeed;
+	b2Float motorSpeed;
 
 	/// Scale the debug draw
-	float drawSize;
+	b2Float drawSize;
 
 	/// Set this flag to true if the attached bodies should collide
 	bool collideConnected;
@@ -865,19 +865,19 @@ typedef struct b2WeldJointDef
 	b2Vec2 localAnchorB;
 
 	/// The bodyB angle minus bodyA angle in the reference state (radians)
-	float referenceAngle;
+	b2Float referenceAngle;
 
 	/// Linear stiffness expressed as Hertz (cycles per second). Use zero for maximum stiffness.
-	float linearHertz;
+	b2Float linearHertz;
 
 	/// Angular stiffness as Hertz (cycles per second). Use zero for maximum stiffness.
-	float angularHertz;
+	b2Float angularHertz;
 
 	/// Linear damping ratio, non-dimensional. Use 1 for critical damping.
-	float linearDampingRatio;
+	b2Float linearDampingRatio;
 
 	/// Linear damping ratio, non-dimensional. Use 1 for critical damping.
-	float angularDampingRatio;
+	b2Float angularDampingRatio;
 
 	/// Set this flag to true if the attached bodies should collide
 	bool collideConnected;
@@ -921,28 +921,28 @@ typedef struct b2WheelJointDef
 	bool enableSpring;
 
 	/// Spring stiffness in Hertz
-	float hertz;
+	b2Float hertz;
 
 	/// Spring damping ratio, non-dimensional
-	float dampingRatio;
+	b2Float dampingRatio;
 
 	/// Enable/disable the joint linear limit
 	bool enableLimit;
 
 	/// The lower translation limit
-	float lowerTranslation;
+	b2Float lowerTranslation;
 
 	/// The upper translation limit
-	float upperTranslation;
+	b2Float upperTranslation;
 
 	/// Enable/disable the joint rotational motor
 	bool enableMotor;
 
 	/// The maximum motor torque, typically in newton-meters
-	float maxMotorTorque;
+	b2Float maxMotorTorque;
 
 	/// The desired motor speed in radians per second
-	float motorSpeed;
+	b2Float motorSpeed;
 
 	/// Set this flag to true if the attached bodies should collide
 	bool collideConnected;
@@ -970,15 +970,15 @@ typedef struct b2ExplosionDef
 	b2Vec2 position;
 
 	/// The radius of the explosion
-	float radius;
+	b2Float radius;
 
 	/// The falloff distance beyond the radius. Impulse is reduced to zero at this distance.
-	float falloff;
+	b2Float falloff;
 
 	/// Impulse per unit length. This applies an impulse according to the shape perimeter that
 	/// is facing the explosion. Explosions only apply to circles, capsules, and polygons. This
 	/// may be negative for implosions.
-	float impulsePerLength;
+	b2Float impulsePerLength;
 } b2ExplosionDef;
 
 /// Use this to initialize your explosion definition
@@ -1095,7 +1095,7 @@ typedef struct b2ContactHitEvent
 	b2Vec2 normal;
 
 	/// The speed the shapes are approaching. Always positive. Typically in meters per second.
-	float approachSpeed;
+	b2Float approachSpeed;
 } b2ContactHitEvent;
 
 /// Contact events are buffered in the Box2D world and are available
@@ -1202,7 +1202,7 @@ typedef bool b2OverlapResultFcn( b2ShapeId shapeId, void* context );
 
 /// Prototype callback for ray casts.
 /// Called for each shape found in the query. You control how the ray cast
-/// proceeds by returning a float:
+/// proceeds by returning a b2Float:
 /// return -1: ignore this shape and continue
 /// return 0: terminate the ray cast
 /// return fraction: clip the ray to this point
@@ -1215,7 +1215,7 @@ typedef bool b2OverlapResultFcn( b2ShapeId shapeId, void* context );
 /// @return -1 to filter, 0 to terminate, fraction to clip the ray for closest hit, 1 to continue
 /// @see b2World_CastRay
 /// @ingroup world
-typedef float b2CastResultFcn( b2ShapeId shapeId, b2Vec2 point, b2Vec2 normal, float fraction, void* context );
+typedef b2Float b2CastResultFcn( b2ShapeId shapeId, b2Vec2 point, b2Vec2 normal, b2Float fraction, void* context );
 
 /// These colors are used for debug draw and mostly match the named SVG colors.
 /// See https://www.rapidtables.com/web/color/index.html
@@ -1380,17 +1380,17 @@ typedef struct b2DebugDraw
 	void ( *DrawPolygon )( const b2Vec2* vertices, int vertexCount, b2HexColor color, void* context );
 
 	/// Draw a solid closed polygon provided in CCW order.
-	void ( *DrawSolidPolygon )( b2Transform transform, const b2Vec2* vertices, int vertexCount, float radius, b2HexColor color,
+	void ( *DrawSolidPolygon )( b2Transform transform, const b2Vec2* vertices, int vertexCount, b2Float radius, b2HexColor color,
 								void* context );
 
 	/// Draw a circle.
-	void ( *DrawCircle )( b2Vec2 center, float radius, b2HexColor color, void* context );
+	void ( *DrawCircle )( b2Vec2 center, b2Float radius, b2HexColor color, void* context );
 
 	/// Draw a solid circle.
-	void ( *DrawSolidCircle )( b2Transform transform, float radius, b2HexColor color, void* context );
+	void ( *DrawSolidCircle )( b2Transform transform, b2Float radius, b2HexColor color, void* context );
 
 	/// Draw a solid capsule.
-	void ( *DrawSolidCapsule )( b2Vec2 p1, b2Vec2 p2, float radius, b2HexColor color, void* context );
+	void ( *DrawSolidCapsule )( b2Vec2 p1, b2Vec2 p2, b2Float radius, b2HexColor color, void* context );
 
 	/// Draw a line segment.
 	void ( *DrawSegment )( b2Vec2 p1, b2Vec2 p2, b2HexColor color, void* context );
@@ -1399,7 +1399,7 @@ typedef struct b2DebugDraw
 	void ( *DrawTransform )( b2Transform transform, void* context );
 
 	/// Draw a point.
-	void ( *DrawPoint )( b2Vec2 p, float size, b2HexColor color, void* context );
+	void ( *DrawPoint )( b2Vec2 p, b2Float size, b2HexColor color, void* context );
 
 	/// Draw a string in world space
 	void ( *DrawString )( b2Vec2 p, const char* s, b2HexColor color, void* context );

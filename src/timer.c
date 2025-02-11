@@ -22,7 +22,7 @@ uint64_t b2GetTicks( void )
 	return (uint64_t)counter.QuadPart;
 }
 
-float b2GetMilliseconds( uint64_t ticks )
+b2Float b2GetMilliseconds( uint64_t ticks )
 {
 	if ( s_invFrequency == 0.0 )
 	{
@@ -37,10 +37,10 @@ float b2GetMilliseconds( uint64_t ticks )
 	}
 
 	uint64_t ticksNow = b2GetTicks();
-	return (float)( s_invFrequency * ( ticksNow - ticks ) );
+	return (b2Float)( s_invFrequency * ( ticksNow - ticks ) );
 }
 
-float b2GetMillisecondsAndReset( uint64_t* ticks )
+b2Float b2GetMillisecondsAndReset( uint64_t* ticks )
 {
 	if ( s_invFrequency == 0.0 )
 	{
@@ -55,7 +55,7 @@ float b2GetMillisecondsAndReset( uint64_t* ticks )
 	}
 
 	uint64_t ticksNow = b2GetTicks();
-	float ms = (float)( s_invFrequency * ( ticksNow - *ticks ) );
+	b2Float ms = (b2Float)( s_invFrequency * ( ticksNow - *ticks ) );
 	*ticks = ticksNow;
 	return ms;
 }
@@ -77,16 +77,16 @@ uint64_t b2GetTicks( void )
 	return ts.tv_sec * 1000000000LL + ts.tv_nsec;
 }
 
-float b2GetMilliseconds( uint64_t ticks )
+b2Float b2GetMilliseconds( uint64_t ticks )
 {
 	uint64_t ticksNow = b2GetTicks();
-	return (float)( (ticksNow - ticks) / 1000000.0 );
+	return (b2Float)( (ticksNow - ticks) / 1000000.0 );
 }
 
-float b2GetMillisecondsAndReset( uint64_t* ticks )
+b2Float b2GetMillisecondsAndReset( uint64_t* ticks )
 {
 	uint64_t ticksNow = b2GetTicks();
-	float ms = (float)( (ticksNow - *ticks) / 1000000.0 );
+	b2Float ms = (b2Float)( (ticksNow - *ticks) / 1000000.0 );
 	*ticks = ticksNow;
 	return ms;
 }
@@ -109,7 +109,7 @@ uint64_t b2GetTicks( void )
 	return mach_absolute_time();
 }
 
-float b2GetMilliseconds( uint64_t ticks )
+b2Float b2GetMilliseconds( uint64_t ticks )
 {
 	if ( s_invFrequency == 0 )
 	{
@@ -121,10 +121,10 @@ float b2GetMilliseconds( uint64_t ticks )
 	}
 
 	uint64_t ticksNow = b2GetTicks();
-	return (float)( s_invFrequency * (ticksNow - ticks) );
+	return (b2Float)( s_invFrequency * (ticksNow - ticks) );
 }
 
-float b2GetMillisecondsAndReset( uint64_t* ticks )
+b2Float b2GetMillisecondsAndReset( uint64_t* ticks )
 {
 	if ( s_invFrequency == 0 )
 	{
@@ -136,7 +136,7 @@ float b2GetMillisecondsAndReset( uint64_t* ticks )
 	}
 
 	uint64_t ticksNow = b2GetTicks();
-	float ms = (float)( s_invFrequency * ( ticksNow - *ticks ) );
+	b2Float ms = (b2Float)( s_invFrequency * ( ticksNow - *ticks ) );
 	*ticks = ticksNow;
 	return ms;
 }
@@ -153,13 +153,13 @@ uint64_t b2GetTicks( void )
 	return 0;
 }
 
-float b2GetMilliseconds( uint64_t ticks )
+b2Float b2GetMilliseconds( uint64_t ticks )
 {
 	( (void)( ticks ) );
 	return 0.0f;
 }
 
-float b2GetMillisecondsAndReset( uint64_t* ticks )
+b2Float b2GetMillisecondsAndReset( uint64_t* ticks )
 {
 	( (void)( ticks ) );
 	return 0.0f;

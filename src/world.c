@@ -85,13 +85,13 @@ static void b2DefaultFinishTaskFcn( void* userTask, void* userContext )
 	B2_UNUSED( userTask, userContext );
 }
 
-static float b2DefaultFrictionCallback( float frictionA, int materialA, float frictionB, int materialB )
+static b2Float b2DefaultFrictionCallback( b2Float frictionA, int materialA, b2Float frictionB, int materialB )
 {
 	B2_UNUSED( materialA, materialB );
 	return sqrtf( frictionA * frictionB );
 }
 
-static float b2DefaultRestitutionCallback( float restitutionA, int materialA, float restitutionB, int materialB )
+static b2Float b2DefaultRestitutionCallback( b2Float restitutionA, int materialA, b2Float restitutionB, int materialB )
 {
 	B2_UNUSED( materialA, materialB );
 	return b2MaxFloat( restitutionA, restitutionB );
@@ -682,7 +682,7 @@ static void b2Collide( b2StepContext* context )
 	b2TracyCZoneEnd( collide );
 }
 
-void b2World_Step( b2WorldId worldId, float timeStep, int subStepCount )
+void b2World_Step( b2WorldId worldId, b2Float timeStep, int subStepCount )
 {
 	b2World* world = b2GetWorldFromId( worldId );
 	B2_ASSERT( world->locked == false );
@@ -747,8 +747,8 @@ void b2World_Step( b2WorldId worldId, float timeStep, int subStepCount )
 	world->inv_h = context.inv_h;
 
 	// Hertz values get reduced for large time steps
-	float contactHertz = b2MinFloat( world->contactHertz, 0.25f * context.inv_h );
-	float jointHertz = b2MinFloat( world->jointHertz, 0.125f * context.inv_h );
+	b2Float contactHertz = b2MinFloat( world->contactHertz, 0.25f * context.inv_h );
+	b2Float jointHertz = b2MinFloat( world->jointHertz, 0.125f * context.inv_h );
 
 	context.contactSoftness = b2MakeSoft( contactHertz, world->contactDampingRatio, context.h );
 	context.staticSoftness = b2MakeSoft( 2.0f * contactHertz, world->contactDampingRatio, context.h );
@@ -948,8 +948,8 @@ static void b2DrawWithBounds( b2World* world, b2DebugDraw* draw )
 {
 	B2_ASSERT( b2IsValidAABB( draw->drawingBounds ) );
 
-	const float k_impulseScale = 1.0f;
-	const float k_axisScale = 0.3f;
+	const b2Float k_impulseScale = 1.0f;
+	const b2Float k_axisScale = 0.3f;
 	b2HexColor speculativeColor = b2_colorGainsboro;
 	b2HexColor addColor = b2_colorGreen;
 	b2HexColor persistColor = b2_colorBlue;
@@ -1043,7 +1043,7 @@ static void b2DrawWithBounds( b2World* world, b2DebugDraw* draw )
 				}
 			}
 
-			const float linearSlop = B2_LINEAR_SLOP;
+			const b2Float linearSlop = B2_LINEAR_SLOP;
 			if ( draw->drawContacts && body->type == b2_dynamicBody && body->setIndex == b2_awakeSet )
 			{
 				int contactKey = body->headContactKey;
@@ -1077,7 +1077,7 @@ static void b2DrawWithBounds( b2World* world, b2DebugDraw* draw )
 							if ( draw->drawGraphColors )
 							{
 								// graph color
-								float pointSize = contact->colorIndex == B2_OVERFLOW_INDEX ? 7.5f : 5.0f;
+								b2Float pointSize = contact->colorIndex == B2_OVERFLOW_INDEX ? 7.5f : 5.0f;
 								draw->DrawPoint( point->point, pointSize, graphColors[contact->colorIndex], draw->context );
 								// g_draw.DrawString(point->position, "%d", point->color);
 							}
@@ -1326,7 +1326,7 @@ void b2World_Draw( b2WorldId worldId, b2DebugDraw* draw )
 				b2Vec2 p = b2TransformPoint( transform, offset );
 
 				char buffer[32];
-				float mass = bodySim->invMass > 0.0f ? 1.0f / bodySim->invMass : 0.0f;
+				b2Float mass = bodySim->invMass > 0.0f ? 1.0f / bodySim->invMass : 0.0f;
 				snprintf( buffer, 32, "  %.2f", mass );
 				draw->DrawString( p, buffer, b2_colorWhite, draw->context );
 			}
@@ -1335,9 +1335,9 @@ void b2World_Draw( b2WorldId worldId, b2DebugDraw* draw )
 
 	if ( draw->drawContacts )
 	{
-		const float k_impulseScale = 1.0f;
-		const float k_axisScale = 0.3f;
-		const float linearSlop = B2_LINEAR_SLOP;
+		const b2Float k_impulseScale = 1.0f;
+		const b2Float k_axisScale = 0.3f;
+		const b2Float linearSlop = B2_LINEAR_SLOP;
 
 		b2HexColor speculativeColor = b2_colorLightGray;
 		b2HexColor addColor = b2_colorGreen;
@@ -1369,7 +1369,7 @@ void b2World_Draw( b2WorldId worldId, b2DebugDraw* draw )
 					if ( draw->drawGraphColors && 0 <= colorIndex && colorIndex <= B2_GRAPH_COLOR_COUNT )
 					{
 						// graph color
-						float pointSize = colorIndex == B2_OVERFLOW_INDEX ? 7.5f : 5.0f;
+						b2Float pointSize = colorIndex == B2_OVERFLOW_INDEX ? 7.5f : 5.0f;
 						draw->DrawPoint( point->point, pointSize, colors[colorIndex], draw->context );
 						// g_draw.DrawString(point->position, "%d", point->color);
 					}
@@ -1717,7 +1717,7 @@ bool b2World_IsContinuousEnabled( b2WorldId worldId )
 	return world->enableContinuous;
 }
 
-void b2World_SetRestitutionThreshold( b2WorldId worldId, float value )
+void b2World_SetRestitutionThreshold( b2WorldId worldId, b2Float value )
 {
 	b2World* world = b2GetWorldFromId( worldId );
 	B2_ASSERT( world->locked == false );
@@ -1729,13 +1729,13 @@ void b2World_SetRestitutionThreshold( b2WorldId worldId, float value )
 	world->restitutionThreshold = b2ClampFloat( value, 0.0f, FLT_MAX );
 }
 
-float b2World_GetRestitutionThreshold( b2WorldId worldId )
+b2Float b2World_GetRestitutionThreshold( b2WorldId worldId )
 {
 	b2World* world = b2GetWorldFromId( worldId );
 	return world->restitutionThreshold;
 }
 
-void b2World_SetHitEventThreshold( b2WorldId worldId, float value )
+void b2World_SetHitEventThreshold( b2WorldId worldId, b2Float value )
 {
 	b2World* world = b2GetWorldFromId( worldId );
 	B2_ASSERT( world->locked == false );
@@ -1747,13 +1747,13 @@ void b2World_SetHitEventThreshold( b2WorldId worldId, float value )
 	world->hitEventThreshold = b2ClampFloat( value, 0.0f, FLT_MAX );
 }
 
-float b2World_GetHitEventThreshold( b2WorldId worldId )
+b2Float b2World_GetHitEventThreshold( b2WorldId worldId )
 {
 	b2World* world = b2GetWorldFromId( worldId );
 	return world->hitEventThreshold;
 }
 
-void b2World_SetContactTuning( b2WorldId worldId, float hertz, float dampingRatio, float pushSpeed )
+void b2World_SetContactTuning( b2WorldId worldId, b2Float hertz, b2Float dampingRatio, b2Float pushSpeed )
 {
 	b2World* world = b2GetWorldFromId( worldId );
 	B2_ASSERT( world->locked == false );
@@ -1767,7 +1767,7 @@ void b2World_SetContactTuning( b2WorldId worldId, float hertz, float dampingRati
 	world->contactMaxPushSpeed = b2ClampFloat( pushSpeed, 0.0f, FLT_MAX );
 }
 
-void b2World_SetJointTuning( b2WorldId worldId, float hertz, float dampingRatio )
+void b2World_SetJointTuning( b2WorldId worldId, b2Float hertz, b2Float dampingRatio )
 {
 	b2World* world = b2GetWorldFromId( worldId );
 	B2_ASSERT( world->locked == false );
@@ -1780,7 +1780,7 @@ void b2World_SetJointTuning( b2WorldId worldId, float hertz, float dampingRatio 
 	world->jointDampingRatio = b2ClampFloat( dampingRatio, 0.0f, FLT_MAX );
 }
 
-void b2World_SetMaximumLinearSpeed( b2WorldId worldId, float maximumLinearSpeed )
+void b2World_SetMaximumLinearSpeed( b2WorldId worldId, b2Float maximumLinearSpeed )
 {
 	B2_ASSERT( b2IsValidFloat( maximumLinearSpeed ) && maximumLinearSpeed > 0.0f );
 
@@ -1794,7 +1794,7 @@ void b2World_SetMaximumLinearSpeed( b2WorldId worldId, float maximumLinearSpeed 
 	world->maxLinearSpeed = maximumLinearSpeed;
 }
 
-float b2World_GetMaximumLinearSpeed( b2WorldId worldId )
+b2Float b2World_GetMaximumLinearSpeed( b2WorldId worldId )
 {
 	b2World* world = b2GetWorldFromId( worldId );
 	return world->maxLinearSpeed;
@@ -2198,11 +2198,11 @@ typedef struct WorldRayCastContext
 	b2World* world;
 	b2CastResultFcn* fcn;
 	b2QueryFilter filter;
-	float fraction;
+	b2Float fraction;
 	void* userContext;
 } WorldRayCastContext;
 
-static float RayCastCallback( const b2RayCastInput* input, int proxyId, int shapeId, void* context )
+static b2Float RayCastCallback( const b2RayCastInput* input, int proxyId, int shapeId, void* context )
 {
 	B2_UNUSED( proxyId );
 
@@ -2225,7 +2225,7 @@ static float RayCastCallback( const b2RayCastInput* input, int proxyId, int shap
 	if ( output.hit )
 	{
 		b2ShapeId id = { shapeId + 1, world->worldId, shape->generation };
-		float fraction = worldContext->fcn( id, output.point, output.normal, output.fraction, worldContext->userContext );
+		b2Float fraction = worldContext->fcn( id, output.point, output.normal, output.fraction, worldContext->userContext );
 
 		// The user may return -1 to skip this shape
 		if ( 0.0f <= fraction && fraction <= 1.0f )
@@ -2277,7 +2277,7 @@ b2TreeStats b2World_CastRay( b2WorldId worldId, b2Vec2 origin, b2Vec2 translatio
 }
 
 // This callback finds the closest hit. This is the most common callback used in games.
-static float b2RayCastClosestFcn( b2ShapeId shapeId, b2Vec2 point, b2Vec2 normal, float fraction, void* context )
+static b2Float b2RayCastClosestFcn( b2ShapeId shapeId, b2Vec2 point, b2Vec2 normal, b2Float fraction, void* context )
 {
 	b2RayResult* rayResult = (b2RayResult*)context;
 	rayResult->shapeId = shapeId;
@@ -2323,7 +2323,7 @@ b2RayResult b2World_CastRayClosest( b2WorldId worldId, b2Vec2 origin, b2Vec2 tra
 	return result;
 }
 
-static float ShapeCastCallback( const b2ShapeCastInput* input, int proxyId, int shapeId, void* context )
+static b2Float ShapeCastCallback( const b2ShapeCastInput* input, int proxyId, int shapeId, void* context )
 {
 	B2_UNUSED( proxyId );
 
@@ -2347,7 +2347,7 @@ static float ShapeCastCallback( const b2ShapeCastInput* input, int proxyId, int 
 	if ( output.hit )
 	{
 		b2ShapeId id = { shapeId + 1, world->worldId, shape->generation };
-		float fraction = worldContext->fcn( id, output.point, output.normal, output.fraction, worldContext->userContext );
+		b2Float fraction = worldContext->fcn( id, output.point, output.normal, output.fraction, worldContext->userContext );
 		worldContext->fraction = fraction;
 		return fraction;
 	}
@@ -2608,9 +2608,9 @@ struct ExplosionContext
 {
 	b2World* world;
 	b2Vec2 position;
-	float radius;
-	float falloff;
-	float impulsePerLength;
+	b2Float radius;
+	b2Float falloff;
+	b2Float impulsePerLength;
 };
 
 static bool ExplosionCallback( int proxyId, int shapeId, void* context )
@@ -2637,8 +2637,8 @@ static bool ExplosionCallback( int proxyId, int shapeId, void* context )
 	b2SimplexCache cache = { 0 };
 	b2DistanceOutput output = b2ShapeDistance( &cache, &input, NULL, 0 );
 
-	float radius = explosionContext->radius;
-	float falloff = explosionContext->falloff;
+	b2Float radius = explosionContext->radius;
+	b2Float falloff = explosionContext->falloff;
 	if ( output.distance > radius + falloff )
 	{
 		return true;
@@ -2669,14 +2669,14 @@ static bool ExplosionCallback( int proxyId, int shapeId, void* context )
 	}
 
 	b2Vec2 localLine = b2InvRotateVector( transform.q, b2LeftPerp( direction ) );
-	float perimeter = b2GetShapeProjectedPerimeter( shape, localLine );
-	float scale = 1.0f;
+	b2Float perimeter = b2GetShapeProjectedPerimeter( shape, localLine );
+	b2Float scale = 1.0f;
 	if ( output.distance > radius && falloff > 0.0f )
 	{
 		scale = b2ClampFloat( ( radius + falloff - output.distance ) / falloff, 0.0f, 1.0f );
 	}
 
-	float magnitude = explosionContext->impulsePerLength * perimeter * scale;
+	b2Float magnitude = explosionContext->impulsePerLength * perimeter * scale;
 	b2Vec2 impulse = b2MulSV( magnitude, direction );
 
 	int localIndex = body->localIndex;
@@ -2693,9 +2693,9 @@ void b2World_Explode( b2WorldId worldId, const b2ExplosionDef* explosionDef )
 {
 	uint64_t maskBits = explosionDef->maskBits;
 	b2Vec2 position = explosionDef->position;
-	float radius = explosionDef->radius;
-	float falloff = explosionDef->falloff;
-	float impulsePerLength = explosionDef->impulsePerLength;
+	b2Float radius = explosionDef->radius;
+	b2Float falloff = explosionDef->falloff;
+	b2Float impulsePerLength = explosionDef->impulsePerLength;
 
 	B2_ASSERT( b2IsValidVec2( position ) );
 	B2_ASSERT( b2IsValidFloat( radius ) && radius >= 0.0f );

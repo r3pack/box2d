@@ -46,13 +46,13 @@ typedef struct b2Body
 	int islandPrev;
 	int islandNext;
 
-	float mass;
+	b2Float mass;
 
 	// Rotational inertia about the center of mass.
-	float inertia;
+	b2Float inertia;
 
-	float sleepThreshold;
-	float sleepTime;
+	b2Float sleepThreshold;
+	b2Float sleepTime;
 
 	// this is used to adjust the fellAsleep flag in the body move array
 	int bodyMoveIndex;
@@ -79,7 +79,7 @@ typedef struct b2Body
 typedef struct b2BodyState
 {
 	b2Vec2 linearVelocity; // 8
-	float angularVelocity; // 4
+	b2Float angularVelocity; // 4
 	int flags;			   // 4
 
 	// Using delta position reduces round-off error far from the origin
@@ -112,17 +112,17 @@ typedef struct b2BodySim
 	b2Vec2 localCenter;
 
 	b2Vec2 force;
-	float torque;
+	b2Float torque;
 
 	// inverse inertia
-	float invMass;
-	float invInertia;
+	b2Float invMass;
+	b2Float invInertia;
 
-	float minExtent;
-	float maxExtent;
-	float linearDamping;
-	float angularDamping;
-	float gravityScale;
+	b2Float minExtent;
+	b2Float maxExtent;
+	b2Float linearDamping;
+	b2Float angularDamping;
+	b2Float gravityScale;
 
 	// body data can be moved around, the id is stable (used in b2BodyId)
 	int bodyId;

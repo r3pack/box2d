@@ -30,25 +30,25 @@ bool b2WheelJoint_IsSpringEnabled( b2JointId jointId )
 	return joint->wheelJoint.enableSpring;
 }
 
-void b2WheelJoint_SetSpringHertz( b2JointId jointId, float hertz )
+void b2WheelJoint_SetSpringHertz( b2JointId jointId, b2Float hertz )
 {
 	b2JointSim* joint = b2GetJointSimCheckType( jointId, b2_wheelJoint );
 	joint->wheelJoint.hertz = hertz;
 }
 
-float b2WheelJoint_GetSpringHertz( b2JointId jointId )
+b2Float b2WheelJoint_GetSpringHertz( b2JointId jointId )
 {
 	b2JointSim* joint = b2GetJointSimCheckType( jointId, b2_wheelJoint );
 	return joint->wheelJoint.hertz;
 }
 
-void b2WheelJoint_SetSpringDampingRatio( b2JointId jointId, float dampingRatio )
+void b2WheelJoint_SetSpringDampingRatio( b2JointId jointId, b2Float dampingRatio )
 {
 	b2JointSim* joint = b2GetJointSimCheckType( jointId, b2_wheelJoint );
 	joint->wheelJoint.dampingRatio = dampingRatio;
 }
 
-float b2WheelJoint_GetSpringDampingRatio( b2JointId jointId )
+b2Float b2WheelJoint_GetSpringDampingRatio( b2JointId jointId )
 {
 	b2JointSim* joint = b2GetJointSimCheckType( jointId, b2_wheelJoint );
 	return joint->wheelJoint.dampingRatio;
@@ -71,19 +71,19 @@ bool b2WheelJoint_IsLimitEnabled( b2JointId jointId )
 	return joint->wheelJoint.enableLimit;
 }
 
-float b2WheelJoint_GetLowerLimit( b2JointId jointId )
+b2Float b2WheelJoint_GetLowerLimit( b2JointId jointId )
 {
 	b2JointSim* joint = b2GetJointSimCheckType( jointId, b2_wheelJoint );
 	return joint->wheelJoint.lowerTranslation;
 }
 
-float b2WheelJoint_GetUpperLimit( b2JointId jointId )
+b2Float b2WheelJoint_GetUpperLimit( b2JointId jointId )
 {
 	b2JointSim* joint = b2GetJointSimCheckType( jointId, b2_wheelJoint );
 	return joint->wheelJoint.upperTranslation;
 }
 
-void b2WheelJoint_SetLimits( b2JointId jointId, float lower, float upper )
+void b2WheelJoint_SetLimits( b2JointId jointId, b2Float lower, b2Float upper )
 {
 	b2JointSim* joint = b2GetJointSimCheckType( jointId, b2_wheelJoint );
 	if ( lower != joint->wheelJoint.lowerTranslation || upper != joint->wheelJoint.upperTranslation )
@@ -111,32 +111,32 @@ bool b2WheelJoint_IsMotorEnabled( b2JointId jointId )
 	return joint->wheelJoint.enableMotor;
 }
 
-void b2WheelJoint_SetMotorSpeed( b2JointId jointId, float motorSpeed )
+void b2WheelJoint_SetMotorSpeed( b2JointId jointId, b2Float motorSpeed )
 {
 	b2JointSim* joint = b2GetJointSimCheckType( jointId, b2_wheelJoint );
 	joint->wheelJoint.motorSpeed = motorSpeed;
 }
 
-float b2WheelJoint_GetMotorSpeed( b2JointId jointId )
+b2Float b2WheelJoint_GetMotorSpeed( b2JointId jointId )
 {
 	b2JointSim* joint = b2GetJointSimCheckType( jointId, b2_wheelJoint );
 	return joint->wheelJoint.motorSpeed;
 }
 
-float b2WheelJoint_GetMotorTorque( b2JointId jointId )
+b2Float b2WheelJoint_GetMotorTorque( b2JointId jointId )
 {
 	b2World* world = b2GetWorld( jointId.world0 );
 	b2JointSim* joint = b2GetJointSimCheckType( jointId, b2_wheelJoint );
 	return world->inv_h * joint->wheelJoint.motorImpulse;
 }
 
-void b2WheelJoint_SetMaxMotorTorque( b2JointId jointId, float torque )
+void b2WheelJoint_SetMaxMotorTorque( b2JointId jointId, b2Float torque )
 {
 	b2JointSim* joint = b2GetJointSimCheckType( jointId, b2_wheelJoint );
 	joint->wheelJoint.maxMotorTorque = torque;
 }
 
-float b2WheelJoint_GetMaxMotorTorque( b2JointId jointId )
+b2Float b2WheelJoint_GetMaxMotorTorque( b2JointId jointId )
 {
 	b2JointSim* joint = b2GetJointSimCheckType( jointId, b2_wheelJoint );
 	return joint->wheelJoint.maxMotorTorque;
@@ -150,14 +150,14 @@ b2Vec2 b2GetWheelJointForce( b2World* world, b2JointSim* base )
 	b2Vec2 axisA = joint->axisA;
 	b2Vec2 perpA = b2LeftPerp( axisA );
 
-	float perpForce = world->inv_h * joint->perpImpulse;
-	float axialForce = world->inv_h * ( joint->springImpulse + joint->lowerImpulse - joint->upperImpulse );
+	b2Float perpForce = world->inv_h * joint->perpImpulse;
+	b2Float axialForce = world->inv_h * ( joint->springImpulse + joint->lowerImpulse - joint->upperImpulse );
 
 	b2Vec2 force = b2Add( b2MulSV( perpForce, perpA ), b2MulSV( axialForce, axisA ) );
 	return force;
 }
 
-float b2GetWheelJointTorque( b2World* world, b2JointSim* base )
+b2Float b2GetWheelJointTorque( b2World* world, b2JointSim* base )
 {
 	return world->inv_h * base->wheelJoint.motorImpulse;
 }
@@ -201,10 +201,10 @@ void b2PrepareWheelJoint( b2JointSim* base, b2StepContext* context )
 	b2BodySim* bodySimA = b2BodySimArray_Get( &setA->bodySims, localIndexA );
 	b2BodySim* bodySimB = b2BodySimArray_Get( &setB->bodySims, localIndexB );
 
-	float mA = bodySimA->invMass;
-	float iA = bodySimA->invInertia;
-	float mB = bodySimB->invMass;
-	float iB = bodySimB->invInertia;
+	b2Float mA = bodySimA->invMass;
+	b2Float iA = bodySimA->invInertia;
+	b2Float mB = bodySimB->invMass;
+	b2Float iB = bodySimB->invInertia;
 
 	base->invMassA = mA;
 	base->invMassB = mB;
@@ -232,22 +232,22 @@ void b2PrepareWheelJoint( b2JointSim* base, b2StepContext* context )
 	b2Vec2 perpA = b2LeftPerp( axisA );
 
 	// perpendicular constraint (keep wheel on line)
-	float s1 = b2Cross( b2Add( d, rA ), perpA );
-	float s2 = b2Cross( rB, perpA );
+	b2Float s1 = b2Cross( b2Add( d, rA ), perpA );
+	b2Float s2 = b2Cross( rB, perpA );
 
-	float kp = mA + mB + iA * s1 * s1 + iB * s2 * s2;
+	b2Float kp = mA + mB + iA * s1 * s1 + iB * s2 * s2;
 	joint->perpMass = kp > 0.0f ? 1.0f / kp : 0.0f;
 
 	// spring constraint
-	float a1 = b2Cross( b2Add( d, rA ), axisA );
-	float a2 = b2Cross( rB, axisA );
+	b2Float a1 = b2Cross( b2Add( d, rA ), axisA );
+	b2Float a2 = b2Cross( rB, axisA );
 
-	float ka = mA + mB + iA * a1 * a1 + iB * a2 * a2;
+	b2Float ka = mA + mB + iA * a1 * a1 + iB * a2 * a2;
 	joint->axialMass = ka > 0.0f ? 1.0f / ka : 0.0f;
 
 	joint->springSoftness = b2MakeSoft( joint->hertz, joint->dampingRatio, context->h );
 
-	float km = iA + iB;
+	b2Float km = iA + iB;
 	joint->motorMass = km > 0.0f ? 1.0f / km : 0.0f;
 
 	if ( context->enableWarmStarting == false )
@@ -264,10 +264,10 @@ void b2WarmStartWheelJoint( b2JointSim* base, b2StepContext* context )
 {
 	B2_ASSERT( base->type == b2_wheelJoint );
 
-	float mA = base->invMassA;
-	float mB = base->invMassB;
-	float iA = base->invIA;
-	float iB = base->invIB;
+	b2Float mA = base->invMassA;
+	b2Float mB = base->invMassB;
+	b2Float iA = base->invIA;
+	b2Float iB = base->invIB;
 
 	// dummy state for static bodies
 	b2BodyState dummyState = b2_identityBodyState;
@@ -284,16 +284,16 @@ void b2WarmStartWheelJoint( b2JointSim* base, b2StepContext* context )
 	b2Vec2 axisA = b2RotateVector( stateA->deltaRotation, joint->axisA );
 	b2Vec2 perpA = b2LeftPerp( axisA );
 
-	float a1 = b2Cross( b2Add( d, rA ), axisA );
-	float a2 = b2Cross( rB, axisA );
-	float s1 = b2Cross( b2Add( d, rA ), perpA );
-	float s2 = b2Cross( rB, perpA );
+	b2Float a1 = b2Cross( b2Add( d, rA ), axisA );
+	b2Float a2 = b2Cross( rB, axisA );
+	b2Float s1 = b2Cross( b2Add( d, rA ), perpA );
+	b2Float s2 = b2Cross( rB, perpA );
 
-	float axialImpulse = joint->springImpulse + joint->lowerImpulse - joint->upperImpulse;
+	b2Float axialImpulse = joint->springImpulse + joint->lowerImpulse - joint->upperImpulse;
 
 	b2Vec2 P = b2Add( b2MulSV( axialImpulse, axisA ), b2MulSV( joint->perpImpulse, perpA ) );
-	float LA = axialImpulse * a1 + joint->perpImpulse * s1 + joint->motorImpulse;
-	float LB = axialImpulse * a2 + joint->perpImpulse * s2 + joint->motorImpulse;
+	b2Float LA = axialImpulse * a1 + joint->perpImpulse * s1 + joint->motorImpulse;
+	b2Float LB = axialImpulse * a2 + joint->perpImpulse * s2 + joint->motorImpulse;
 
 	stateA->linearVelocity = b2MulSub( stateA->linearVelocity, mA, P );
 	stateA->angularVelocity -= iA * LA;
@@ -305,10 +305,10 @@ void b2SolveWheelJoint( b2JointSim* base, b2StepContext* context, bool useBias )
 {
 	B2_ASSERT( base->type == b2_wheelJoint );
 
-	float mA = base->invMassA;
-	float mB = base->invMassB;
-	float iA = base->invIA;
-	float iB = base->invIB;
+	b2Float mA = base->invMassA;
+	b2Float mB = base->invMassB;
+	b2Float iA = base->invIA;
+	b2Float iB = base->invIB;
 
 	// dummy state for static bodies
 	b2BodyState dummyState = b2_identityBodyState;
@@ -319,9 +319,9 @@ void b2SolveWheelJoint( b2JointSim* base, b2StepContext* context, bool useBias )
 	b2BodyState* stateB = joint->indexB == B2_NULL_INDEX ? &dummyState : context->states + joint->indexB;
 
 	b2Vec2 vA = stateA->linearVelocity;
-	float wA = stateA->angularVelocity;
+	b2Float wA = stateA->angularVelocity;
 	b2Vec2 vB = stateB->linearVelocity;
-	float wB = stateB->angularVelocity;
+	b2Float wB = stateB->angularVelocity;
 
 	bool fixedRotation = ( iA + iB == 0.0f );
 
@@ -331,18 +331,18 @@ void b2SolveWheelJoint( b2JointSim* base, b2StepContext* context, bool useBias )
 
 	b2Vec2 d = b2Add( b2Add( b2Sub( stateB->deltaPosition, stateA->deltaPosition ), joint->deltaCenter ), b2Sub( rB, rA ) );
 	b2Vec2 axisA = b2RotateVector( stateA->deltaRotation, joint->axisA );
-	float translation = b2Dot( axisA, d );
+	b2Float translation = b2Dot( axisA, d );
 
-	float a1 = b2Cross( b2Add( d, rA ), axisA );
-	float a2 = b2Cross( rB, axisA );
+	b2Float a1 = b2Cross( b2Add( d, rA ), axisA );
+	b2Float a2 = b2Cross( rB, axisA );
 
 	// motor constraint
 	if ( joint->enableMotor && fixedRotation == false )
 	{
-		float Cdot = wB - wA - joint->motorSpeed;
-		float impulse = -joint->motorMass * Cdot;
-		float oldImpulse = joint->motorImpulse;
-		float maxImpulse = context->h * joint->maxMotorTorque;
+		b2Float Cdot = wB - wA - joint->motorSpeed;
+		b2Float impulse = -joint->motorMass * Cdot;
+		b2Float oldImpulse = joint->motorImpulse;
+		b2Float maxImpulse = context->h * joint->maxMotorTorque;
 		joint->motorImpulse = b2ClampFloat( joint->motorImpulse + impulse, -maxImpulse, maxImpulse );
 		impulse = joint->motorImpulse - oldImpulse;
 
@@ -354,18 +354,18 @@ void b2SolveWheelJoint( b2JointSim* base, b2StepContext* context, bool useBias )
 	if ( joint->enableSpring )
 	{
 		// This is a real spring and should be applied even during relax
-		float C = translation;
-		float bias = joint->springSoftness.biasRate * C;
-		float massScale = joint->springSoftness.massScale;
-		float impulseScale = joint->springSoftness.impulseScale;
+		b2Float C = translation;
+		b2Float bias = joint->springSoftness.biasRate * C;
+		b2Float massScale = joint->springSoftness.massScale;
+		b2Float impulseScale = joint->springSoftness.impulseScale;
 
-		float Cdot = b2Dot( axisA, b2Sub( vB, vA ) ) + a2 * wB - a1 * wA;
-		float impulse = -massScale * joint->axialMass * ( Cdot + bias ) - impulseScale * joint->springImpulse;
+		b2Float Cdot = b2Dot( axisA, b2Sub( vB, vA ) ) + a2 * wB - a1 * wA;
+		b2Float impulse = -massScale * joint->axialMass * ( Cdot + bias ) - impulseScale * joint->springImpulse;
 		joint->springImpulse += impulse;
 
 		b2Vec2 P = b2MulSV( impulse, axisA );
-		float LA = impulse * a1;
-		float LB = impulse * a2;
+		b2Float LA = impulse * a1;
+		b2Float LB = impulse * a2;
 
 		vA = b2MulSub( vA, mA, P );
 		wA -= iA * LA;
@@ -377,10 +377,10 @@ void b2SolveWheelJoint( b2JointSim* base, b2StepContext* context, bool useBias )
 	{
 		// Lower limit
 		{
-			float C = translation - joint->lowerTranslation;
-			float bias = 0.0f;
-			float massScale = 1.0f;
-			float impulseScale = 0.0f;
+			b2Float C = translation - joint->lowerTranslation;
+			b2Float bias = 0.0f;
+			b2Float massScale = 1.0f;
+			b2Float impulseScale = 0.0f;
 
 			if ( C > 0.0f )
 			{
@@ -394,15 +394,15 @@ void b2SolveWheelJoint( b2JointSim* base, b2StepContext* context, bool useBias )
 				impulseScale = context->jointSoftness.impulseScale;
 			}
 
-			float Cdot = b2Dot( axisA, b2Sub( vB, vA ) ) + a2 * wB - a1 * wA;
-			float impulse = -massScale * joint->axialMass * ( Cdot + bias ) - impulseScale * joint->lowerImpulse;
-			float oldImpulse = joint->lowerImpulse;
+			b2Float Cdot = b2Dot( axisA, b2Sub( vB, vA ) ) + a2 * wB - a1 * wA;
+			b2Float impulse = -massScale * joint->axialMass * ( Cdot + bias ) - impulseScale * joint->lowerImpulse;
+			b2Float oldImpulse = joint->lowerImpulse;
 			joint->lowerImpulse = b2MaxFloat( oldImpulse + impulse, 0.0f );
 			impulse = joint->lowerImpulse - oldImpulse;
 
 			b2Vec2 P = b2MulSV( impulse, axisA );
-			float LA = impulse * a1;
-			float LB = impulse * a2;
+			b2Float LA = impulse * a1;
+			b2Float LB = impulse * a2;
 
 			vA = b2MulSub( vA, mA, P );
 			wA -= iA * LA;
@@ -415,10 +415,10 @@ void b2SolveWheelJoint( b2JointSim* base, b2StepContext* context, bool useBias )
 		// This also keeps the impulse positive when the limit is active.
 		{
 			// sign flipped
-			float C = joint->upperTranslation - translation;
-			float bias = 0.0f;
-			float massScale = 1.0f;
-			float impulseScale = 0.0f;
+			b2Float C = joint->upperTranslation - translation;
+			b2Float bias = 0.0f;
+			b2Float massScale = 1.0f;
+			b2Float impulseScale = 0.0f;
 
 			if ( C > 0.0f )
 			{
@@ -433,15 +433,15 @@ void b2SolveWheelJoint( b2JointSim* base, b2StepContext* context, bool useBias )
 			}
 
 			// sign flipped on Cdot
-			float Cdot = b2Dot( axisA, b2Sub( vA, vB ) ) + a1 * wA - a2 * wB;
-			float impulse = -massScale * joint->axialMass * ( Cdot + bias ) - impulseScale * joint->upperImpulse;
-			float oldImpulse = joint->upperImpulse;
+			b2Float Cdot = b2Dot( axisA, b2Sub( vA, vB ) ) + a1 * wA - a2 * wB;
+			b2Float impulse = -massScale * joint->axialMass * ( Cdot + bias ) - impulseScale * joint->upperImpulse;
+			b2Float oldImpulse = joint->upperImpulse;
 			joint->upperImpulse = b2MaxFloat( oldImpulse + impulse, 0.0f );
 			impulse = joint->upperImpulse - oldImpulse;
 
 			b2Vec2 P = b2MulSV( impulse, axisA );
-			float LA = impulse * a1;
-			float LB = impulse * a2;
+			b2Float LA = impulse * a1;
+			b2Float LB = impulse * a2;
 
 			// sign flipped on applied impulse
 			vA = b2MulAdd( vA, mA, P );
@@ -455,27 +455,27 @@ void b2SolveWheelJoint( b2JointSim* base, b2StepContext* context, bool useBias )
 	{
 		b2Vec2 perpA = b2LeftPerp( axisA );
 
-		float bias = 0.0f;
-		float massScale = 1.0f;
-		float impulseScale = 0.0f;
+		b2Float bias = 0.0f;
+		b2Float massScale = 1.0f;
+		b2Float impulseScale = 0.0f;
 		if ( useBias )
 		{
-			float C = b2Dot( perpA, d );
+			b2Float C = b2Dot( perpA, d );
 			bias = context->jointSoftness.biasRate * C;
 			massScale = context->jointSoftness.massScale;
 			impulseScale = context->jointSoftness.impulseScale;
 		}
 
-		float s1 = b2Cross( b2Add( d, rA ), perpA );
-		float s2 = b2Cross( rB, perpA );
-		float Cdot = b2Dot( perpA, b2Sub( vB, vA ) ) + s2 * wB - s1 * wA;
+		b2Float s1 = b2Cross( b2Add( d, rA ), perpA );
+		b2Float s2 = b2Cross( rB, perpA );
+		b2Float Cdot = b2Dot( perpA, b2Sub( vB, vA ) ) + s2 * wB - s1 * wA;
 
-		float impulse = -massScale * joint->perpMass * ( Cdot + bias ) - impulseScale * joint->perpImpulse;
+		b2Float impulse = -massScale * joint->perpMass * ( Cdot + bias ) - impulseScale * joint->perpImpulse;
 		joint->perpImpulse += impulse;
 
 		b2Vec2 P = b2MulSV( impulse, perpA );
-		float LA = impulse * s1;
-		float LB = impulse * s2;
+		b2Float LA = impulse * s1;
+		b2Float LB = impulse * s2;
 
 		vA = b2MulSub( vA, mA, P );
 		wA -= iA * LA;

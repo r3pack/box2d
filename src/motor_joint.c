@@ -23,49 +23,49 @@ b2Vec2 b2MotorJoint_GetLinearOffset( b2JointId jointId )
 	return joint->motorJoint.linearOffset;
 }
 
-void b2MotorJoint_SetAngularOffset( b2JointId jointId, float angularOffset )
+void b2MotorJoint_SetAngularOffset( b2JointId jointId, b2Float angularOffset )
 {
 	b2JointSim* joint = b2GetJointSimCheckType( jointId, b2_motorJoint );
 	joint->motorJoint.angularOffset = b2ClampFloat( angularOffset, -B2_PI, B2_PI );
 }
 
-float b2MotorJoint_GetAngularOffset( b2JointId jointId )
+b2Float b2MotorJoint_GetAngularOffset( b2JointId jointId )
 {
 	b2JointSim* joint = b2GetJointSimCheckType( jointId, b2_motorJoint );
 	return joint->motorJoint.angularOffset;
 }
 
-void b2MotorJoint_SetMaxForce( b2JointId jointId, float maxForce )
+void b2MotorJoint_SetMaxForce( b2JointId jointId, b2Float maxForce )
 {
 	b2JointSim* joint = b2GetJointSimCheckType( jointId, b2_motorJoint );
 	joint->motorJoint.maxForce = b2MaxFloat( 0.0f, maxForce );
 }
 
-float b2MotorJoint_GetMaxForce( b2JointId jointId )
+b2Float b2MotorJoint_GetMaxForce( b2JointId jointId )
 {
 	b2JointSim* joint = b2GetJointSimCheckType( jointId, b2_motorJoint );
 	return joint->motorJoint.maxForce;
 }
 
-void b2MotorJoint_SetMaxTorque( b2JointId jointId, float maxTorque )
+void b2MotorJoint_SetMaxTorque( b2JointId jointId, b2Float maxTorque )
 {
 	b2JointSim* joint = b2GetJointSimCheckType( jointId, b2_motorJoint );
 	joint->motorJoint.maxTorque = b2MaxFloat( 0.0f, maxTorque );
 }
 
-float b2MotorJoint_GetMaxTorque( b2JointId jointId )
+b2Float b2MotorJoint_GetMaxTorque( b2JointId jointId )
 {
 	b2JointSim* joint = b2GetJointSimCheckType( jointId, b2_motorJoint );
 	return joint->motorJoint.maxTorque;
 }
 
-void b2MotorJoint_SetCorrectionFactor( b2JointId jointId, float correctionFactor )
+void b2MotorJoint_SetCorrectionFactor( b2JointId jointId, b2Float correctionFactor )
 {
 	b2JointSim* joint = b2GetJointSimCheckType( jointId, b2_motorJoint );
 	joint->motorJoint.correctionFactor = b2ClampFloat( correctionFactor, 0.0f, 1.0f );
 }
 
-float b2MotorJoint_GetCorrectionFactor( b2JointId jointId )
+b2Float b2MotorJoint_GetCorrectionFactor( b2JointId jointId )
 {
 	b2JointSim* joint = b2GetJointSimCheckType( jointId, b2_motorJoint );
 	return joint->motorJoint.correctionFactor;
@@ -77,7 +77,7 @@ b2Vec2 b2GetMotorJointForce( b2World* world, b2JointSim* base )
 	return force;
 }
 
-float b2GetMotorJointTorque( b2World* world, b2JointSim* base )
+b2Float b2GetMotorJointTorque( b2World* world, b2JointSim* base )
 {
 	return world->inv_h * base->motorJoint.angularImpulse;
 }
@@ -120,10 +120,10 @@ void b2PrepareMotorJoint( b2JointSim* base, b2StepContext* context )
 	b2BodySim* bodySimA = b2BodySimArray_Get( &setA->bodySims, localIndexA );
 	b2BodySim* bodySimB = b2BodySimArray_Get( &setB->bodySims, localIndexB );
 
-	float mA = bodySimA->invMass;
-	float iA = bodySimA->invInertia;
-	float mB = bodySimB->invMass;
-	float iB = bodySimB->invInertia;
+	b2Float mA = bodySimA->invMass;
+	b2Float iA = bodySimA->invInertia;
+	b2Float mB = bodySimB->invMass;
+	b2Float iB = bodySimB->invInertia;
 
 	base->invMassA = mA;
 	base->invMassB = mB;
@@ -150,7 +150,7 @@ void b2PrepareMotorJoint( b2JointSim* base, b2StepContext* context )
 	K.cy.y = mA + mB + rA.x * rA.x * iA + rB.x * rB.x * iB;
 	joint->linearMass = b2GetInverse22( K );
 
-	float ka = iA + iB;
+	b2Float ka = iA + iB;
 	joint->angularMass = ka > 0.0f ? 1.0f / ka : 0.0f;
 
 	if ( context->enableWarmStarting == false )
@@ -162,10 +162,10 @@ void b2PrepareMotorJoint( b2JointSim* base, b2StepContext* context )
 
 void b2WarmStartMotorJoint( b2JointSim* base, b2StepContext* context )
 {
-	float mA = base->invMassA;
-	float mB = base->invMassB;
-	float iA = base->invIA;
-	float iB = base->invIB;
+	b2Float mA = base->invMassA;
+	b2Float mB = base->invMassB;
+	b2Float iA = base->invIA;
+	b2Float iB = base->invIB;
 
 	b2MotorJoint* joint = &base->motorJoint;
 
@@ -189,10 +189,10 @@ void b2SolveMotorJoint( b2JointSim* base, b2StepContext* context, bool useBias )
 	B2_UNUSED( useBias );
 	B2_ASSERT( base->type == b2_motorJoint );
 
-	float mA = base->invMassA;
-	float mB = base->invMassB;
-	float iA = base->invIA;
-	float iB = base->invIB;
+	b2Float mA = base->invMassA;
+	b2Float mB = base->invMassB;
+	b2Float iA = base->invIA;
+	b2Float iB = base->invIB;
 
 	// dummy state for static bodies
 	b2BodyState dummyState = b2_identityBodyState;
@@ -202,22 +202,22 @@ void b2SolveMotorJoint( b2JointSim* base, b2StepContext* context, bool useBias )
 	b2BodyState* bodyB = joint->indexB == B2_NULL_INDEX ? &dummyState : context->states + joint->indexB;
 
 	b2Vec2 vA = bodyA->linearVelocity;
-	float wA = bodyA->angularVelocity;
+	b2Float wA = bodyA->angularVelocity;
 	b2Vec2 vB = bodyB->linearVelocity;
-	float wB = bodyB->angularVelocity;
+	b2Float wB = bodyB->angularVelocity;
 
 	// angular constraint
 	{
-		float angularSeperation = b2RelativeAngle( bodyB->deltaRotation, bodyA->deltaRotation ) + joint->deltaAngle;
+		b2Float angularSeperation = b2RelativeAngle( bodyB->deltaRotation, bodyA->deltaRotation ) + joint->deltaAngle;
 		angularSeperation = b2UnwindAngle( angularSeperation );
 
-		float angularBias = context->inv_h * joint->correctionFactor * angularSeperation;
+		b2Float angularBias = context->inv_h * joint->correctionFactor * angularSeperation;
 
-		float Cdot = wB - wA;
-		float impulse = -joint->angularMass * ( Cdot + angularBias );
+		b2Float Cdot = wB - wA;
+		b2Float impulse = -joint->angularMass * ( Cdot + angularBias );
 
-		float oldImpulse = joint->angularImpulse;
-		float maxImpulse = context->h * joint->maxTorque;
+		b2Float oldImpulse = joint->angularImpulse;
+		b2Float maxImpulse = context->h * joint->maxTorque;
 		joint->angularImpulse = b2ClampFloat( joint->angularImpulse + impulse, -maxImpulse, maxImpulse );
 		impulse = joint->angularImpulse - oldImpulse;
 
@@ -239,7 +239,7 @@ void b2SolveMotorJoint( b2JointSim* base, b2StepContext* context, bool useBias )
 		b2Vec2 impulse = { -b.x, -b.y };
 
 		b2Vec2 oldImpulse = joint->linearImpulse;
-		float maxImpulse = context->h * joint->maxForce;
+		b2Float maxImpulse = context->h * joint->maxForce;
 		joint->linearImpulse = b2Add( joint->linearImpulse, impulse );
 
 		if ( b2LengthSquared( joint->linearImpulse ) > maxImpulse * maxImpulse )
